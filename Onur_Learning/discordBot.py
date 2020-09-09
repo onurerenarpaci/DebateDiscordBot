@@ -35,11 +35,11 @@ async def on_message(message):
 	
 async def countdown(message):
 	duration = 14*60
-	minutes = 14
-	seconds = 0
-	message = await message.channel.send(f"`{minutes:02}:{seconds:02}` minutes left.")
+	clock = (14,0)
+	message = await message.channel.send(f"`{int(clock[0]):02}:{int(clock[1]):02}` minutes left.")
 	timestamp = time.time()
-	while not (minutes <= 0 and seconds <= 0):
+	timedelta = 0
+	while duration >= timedelta:
 		await asyncio.sleep(5)
 		timedelta = time.time() - timestamp
 		clock = divmod((duration - timedelta),60)
