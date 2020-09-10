@@ -23,9 +23,8 @@ bot = commands.Bot(command_prefix="!")
 async def on_ready():
     print(f"{bot.user.name} has connected to Discord!")
 
-@bot.command(name='register')
+@bot.command(name='kayıt')
 async def register(ctx, unique_id):
-
     sql = "update speakers set discord_id = %s where unique_id = %s"
     val = (ctx.author.id, unique_id)
     mycursor.execute(sql,val)
@@ -40,4 +39,5 @@ async def register(ctx, unique_id):
 async def on_command_error(ctx, error):
     if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument) :  ## IT HANDLES ALL MISSING ARGUMENT EXCEPTIONS.
         await ctx.send("Kayıt yapabilmek için kayıt komutundan sonra id'nizi yazın. Örnek: !kayıt 123456")
+
 bot.run(TOKEN)

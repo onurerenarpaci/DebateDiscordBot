@@ -11,7 +11,7 @@ mydb = mysql.connector.connect(
     password=os.getenv("MYSQL_PASSWORD"),
     database="munazara")
 
-mycursor = mydb.cursor()
+mycursor = mydb.cursor()    
 
 mycursor.execute("CREATE TABLE speakers (name VARCHAR(64), email VARCHAR(64), team VARCHAR(64), institution VARCHAR(64), id INT, url_key VARCHAR(64), checkin BOOLEAN, discord_id VARCHAR(64), unique_id VARCHAR(8))")
 
