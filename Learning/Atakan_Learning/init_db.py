@@ -9,13 +9,15 @@ mydb = mysql.connector.connect(
     host="localhost",
     user=os.getenv("MYSQL_USER"),
     password=os.getenv("MYSQL_PASSWORD"),
-    database="munazara")
+    database="debate")
 
 mycursor = mydb.cursor()    
 
-mycursor.execute("CREATE TABLE speakers (name VARCHAR(64), email VARCHAR(64), team VARCHAR(64), institution VARCHAR(64), id INT, url_key VARCHAR(64), checkin BOOLEAN, discord_id VARCHAR(64), unique_id VARCHAR(8))")
+mycursor.execute("CREATE TABLE Participants (name VARCHAR(64), email VARCHAR(64), role VARCHAR(64) , team VARCHAR(64), team_id VARCHAR(4), institution VARCHAR(64), id INT, url_key VARCHAR(64), checkin BOOLEAN, cut_status BOOLEAN, discord_id VARCHAR(64), unique_id VARCHAR(8))")
 
-f = open("unique_ids.txt","r")
+
+dirname = os.path.dirname(__file__)
+f = open(os.path.join(dirname, 'unique_ids.txt'))
 unique_ids = f.readlines()
 f.close()
 
@@ -37,18 +39,32 @@ for team in teams:
     for _speaker in team["speakers"]:
         speaker = (_speaker["name"], 
         _speaker["email"],
+        "speaker",
         team['short_name'],
+        team["id"],
         institutions[int(team["institution"].split("/")[-1])],
         _speaker["id"],
         _speaker["url_key"],
         False,
-        "NULL",
+        False,
         next(unique_generator)[0:-1] )
         print(speaker)
         speakers.append(speaker)
 
-sql = "INSERT INTO speakers (name, email, team, institution, id, url_key, checkin, discord_id, unique_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+sql = "INSERT INTO Participants (name, email, role, team, team_id, institution, id, url_key, cut_status, checkin, unique_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
 mycursor.executemany(sql, speakers)
 mydb.commit()
-print(mycursor.rowcount," was inserted.")
+print(mycursor.rowcount," speakers was inserted.")
+
+
+# adjudicators = []
+# adjudicator = ()
+
+# adj_list = requests.get("https://kutab.herokuapp.com/api/v1/tournaments/bp88team/adjudicators",headers=headers).json()
+
+# for adj in adj_list:
+#     adjudicator = (adj["name"],
+#     adj["email"],
+#     "jury",
+#     adj["institution"])
