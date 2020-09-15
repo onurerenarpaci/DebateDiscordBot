@@ -11,11 +11,13 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 val = ("Onur Eren Arpaci", "oarpaci18@ku.edu.tr")
-mycursor.execute(sqlcommands.insertInto, val)
+mycursor.execute("select SpeakerId from Speakers where SpeakerId = 5")
+myresult = mycursor.fetchall()
 
+print(myresult[0][0])
 #mycursor.execute(sqlcommands.deleteAll)
 
-mydb.commit()
+#mydb.commit()
 
-for x in mycursor:
-  print(x)
+# for x in mycursor:
+#   print(x)
