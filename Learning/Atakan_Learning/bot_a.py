@@ -13,7 +13,7 @@ mydb = mysql.connector.connect(
     host="localhost",
     user=os.getenv("MYSQL_USER"),
     password=os.getenv("MYSQL_PASSWORD"),
-    database="munazara")
+    database="debate")
 
 mycursor = mydb.cursor()
 
@@ -21,19 +21,27 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 admin = int(os.getenv("ADMIN_ID"))
 bot = commands.Bot(command_prefix="!")
 
-
 @bot.event
 async def on_ready():
     print(f"{bot.user.name} has connected to Discord!")
 
 @bot.command(name='kayıt')
 async def register(ctx, unique_id):
-    sql = "update speakers set discord_id = %s where unique_id = %s"
-    val = (ctx.author.id, unique_id)
+    user = ctx.author
+    sql = "update Participants set discord_id = %s where unique_id = %s"
+    val = (user.id, unique_id)
     mycursor.execute(sql,val)
 
+    sql = "select team,name from Participants where unique_id = %s"
+    val = (unique_id,)
+    mycursor.execute(sql,val)
+    myresult = mycursor.fetchone()
+    print(myresult[0],myresult[1])
     if(mycursor.rowcount >= 1):
         mydb.commit()
+        await user.create_dm()
+        await user.dm_channel.send(f"Hosgelmişen")
+        await user.edit(nick=myresult[0]+" - "+myresult[1])
         await ctx.send("Kayıt başarılı.")
     else:
         await ctx.send("Kayıt başarısız, id bulunamadı.")

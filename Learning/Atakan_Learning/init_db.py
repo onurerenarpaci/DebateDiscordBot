@@ -1,5 +1,5 @@
 import mysql.connector
-import os, requests, sys
+import os, requests, sys, csv
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -13,11 +13,14 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()    
 
-mycursor.execute("CREATE TABLE Participants (name VARCHAR(64), email VARCHAR(64), role VARCHAR(64) , team VARCHAR(64), team_id VARCHAR(4), institution VARCHAR(64), id INT, url_key VARCHAR(64), checkin BOOLEAN, cut_status BOOLEAN, discord_id VARCHAR(64), unique_id VARCHAR(8))")
+mycursor.execute("CREATE TABLE Participants (name VARCHAR(64), email VARCHAR(64), role VARCHAR(64) , team VARCHAR(64), team_id VARCHAR(4), institution VARCHAR(64), id INT, url_key VARCHAR(64), checkin BOOLEAN, cut_status BOOLEAN, discord_id VARCHAR(64), unique_id VARCHAR(6))")
 
+#File names
+uniqe_ids_file_name = "unique_ids.txt"
+volunteer_file_name = "İletişim bilgileri.csv"
 
 dirname = os.path.dirname(__file__)
-f = open(os.path.join(dirname, 'unique_ids.txt'))
+f = open(os.path.join(dirname, uniqe_ids_file_name))
 unique_ids = f.readlines()
 f.close()
 
@@ -51,20 +54,55 @@ for team in teams:
         print(speaker)
         speakers.append(speaker)
 
-sql = "INSERT INTO Participants (name, email, role, team, team_id, institution, id, url_key, cut_status, checkin, unique_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+sql = "INSERT INTO Participants (name, email, role, team, team_id, institution, id, url_key, checkin, cut_status, unique_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
 mycursor.executemany(sql, speakers)
 mydb.commit()
 print(mycursor.rowcount," speakers was inserted.")
 
 
-# adjudicators = []
-# adjudicator = ()
+adjudicators = []
+adjudicator = ()
 
-# adj_list = requests.get("https://kutab.herokuapp.com/api/v1/tournaments/bp88team/adjudicators",headers=headers).json()
+adj_list = requests.get("https://kutab.herokuapp.com/api/v1/tournaments/bp88team/adjudicators",headers=headers).json()
 
-# for adj in adj_list:
-#     adjudicator = (adj["name"],
-#     adj["email"],
-#     "jury",
-#     adj["institution"])
+for adj in adj_list:
+    adjudicator = (adj["name"],
+    adj["email"],
+    "jury",
+    institutions[int(adj["institution"].split('/')[-1])],
+    adj["id"],
+    adj["url_key"],
+    False,
+    False,
+    next(unique_generator)[0:-1])
+    print(adjudicator)
+    adjudicators.append(adjudicator)
+
+sql = "INSERT INTO Participants (name, email, role, institution, id, url_key, checkin, cut_status, unique_id ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+
+mycursor.executemany(sql, adjudicators)
+mydb.commit()
+print(mycursor.rowcount," juries was inserted.")
+
+# mycursor.execute("Select MAX(id) from Participants")
+# myresult= mycursor.fetchone()
+
+# max_id = myresult[0]
+
+# print(myresult)
+# print(type(myresult[0]))
+# volunteers = []
+# volunteer = ()
+# with open(os.path.join(dirname, volunteer_file_name)) as vol_file:
+#     vol_reader = csv.reader(vol_file, delimiter=",")
+#     for i,row in vol_reader:
+#         volunteer( row[1],
+#         row[2],
+#         "volunteer",
+#         "Koç Üniversitesi",
+
+#         next(unique_generator)[0:-1])
+#         volunteers.append(volunteer)
+
+# sql = "INSERT INTO Participants (name, email)"
