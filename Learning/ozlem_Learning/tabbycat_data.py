@@ -8,27 +8,23 @@ import mysql.connector
 
 load_dotenv()
 
+mydb = mysql.connector.connect(
+    host="localhost",
+    user=os.getenv("MYSQL_USER"),
+    password=os.getenv("MYSQL_PASSWORD"),
+    database="debates")
+
+mycursor = mydb.cursor()
 
 url_part = "https://kutab.herokuapp.com/api/v1/tournaments/bp88team/rounds/1/pairings"
-url_venues = "https://kutab.herokuapp.com/api/v1/tournaments/bp88team/venues"
+
 header = {"Authorization": os.getenv("TOKEN") } 
+result = requests.get(url_part, headers = header).json()
 
 teamid_list = []
 id_list = []
 teamdict = {}
 adj_dict = {}
-
-
-#venues = requests.get(url_venues, headers = header)
-# CREATE VenueTable(
-#    VenueID
-#    VenueName
-# )
-# for x in venues:
-#    venue_id = x.get("id")
-#    venue_name = x.get("name")
-#    INSERT INTO VenueTable(VenueID, VenueName)
-#    VALUES(venue_id,venue_name)
 
 result = requests.get(url_part, headers = header).json()
 
@@ -37,7 +33,7 @@ result = requests.get(url_part, headers = header).json()
 #the code that gives team ids in a venue as a dictionary
 i=0
 for x in result:
-   
+
    for y in range(4):
       string = (result[i].get("teams")[y].get("team"))
       teamid_list.append(string.split('/')[-1])
@@ -61,16 +57,14 @@ for a in result:
    j +=1
 #print(adj_dict)
 
+#mycursor.execute("SELECT email FROM Participants WHERE id=18")
 
 
 
-
-     
-        
-
-
-
-
-# print(thisdict)
+#for d in adj_dict:
+#   for e in range(len(adj_dict[d])):
+#      mycursor.execute("SELECT email FROM Participants WHERE id="+adj_dict[d][e]) 
+#      result = mycursor.fetchall()
+#      print(result)
 
 
