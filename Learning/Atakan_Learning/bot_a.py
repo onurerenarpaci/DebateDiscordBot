@@ -2,10 +2,8 @@ import os, discord
 from dotenv import load_dotenv
 from discord.ext import commands
 import mysql.connector
-import traceback
-
+import messages
 load_dotenv()
-
 dirname = os.path.dirname(__file__)
 
 headers = {"Authorization": os.getenv("TABBYCAT_TOKEN")}
@@ -20,11 +18,13 @@ mycursor = mydb.cursor()
 TOKEN = os.getenv('DISCORD_TOKEN')
 admin = int(os.getenv("ADMIN_ID"))
 bot = commands.Bot(command_prefix="!")
+guild_id = 0
 
 @bot.event
 async def on_ready():
-    print(f"{bot.user.name} has connected to Discord!")
-
+    global guild_id
+    print(f"{bot.user.name} has connected to Discord!")    
+    
 @bot.command(name='kayıt')
 async def register(ctx, unique_id):
     user = ctx.author
@@ -38,13 +38,14 @@ async def register(ctx, unique_id):
     myresult = mycursor.fetchone()
     print(myresult[0],myresult[1])
     if(mycursor.rowcount >= 1):
-        mydb.commit()
+        mydb.commit()   
         await user.create_dm()
-        await user.dm_channel.send(f"Hosgelmişen")
+        await user.dm_channel.send(embed=messages.register_message)
         await user.edit(nick=myresult[0]+" - "+myresult[1])
         await ctx.send("Kayıt başarılı.")
     else:
         await ctx.send("Kayıt başarısız, id bulunamadı.")
+
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -58,21 +59,16 @@ async def on_command_error(ctx, error):
     else:
         await send_error_message(ctx, error)
 
-@commands.cooldown(rate=1, per=20, type=commands.BucketType.user)
-@bot.command(name="nil")
-async def nil(ctx):
-    filename = os.path.join(dirname, 'nil.jpg')
-    await ctx.send(file=discord.File(filename))
 
 
-@bot.command(name="dans")
-async def dans(ctx):
-    filename = os.path.join(dirname, 'dance.gif')
-    await ctx.send(file=discord.File(filename))
+#@bot.command(name='test')
+#    async def test(ctx):
 
-@bot.command(name='test')
-async def test(ctx, test_arg):
-    await ctx.send(test_arg)
+
+
+
+
+
 
 async def send_error_message(ctx, error):
     user = bot.get_user(admin)
