@@ -18,31 +18,44 @@ mycursor = mydb.cursor()
 TOKEN = os.getenv('DISCORD_TOKEN')
 admin = int(os.getenv("ADMIN_ID"))
 bot = commands.Bot(command_prefix="!")
-guild_id = 0
 
 @bot.event
 async def on_ready():
-    global guild_id
+    global guild
+    guild = discord.utils.get(bot.guilds, name=GUILD)
     print(f"{bot.user.name} has connected to Discord!")    
     
 @bot.command(name='kayıt')
 async def register(ctx, unique_id):
     user = ctx.author
-    sql = "update Participants set discord_id = %s where unique_id = %s"
-    val = (user.id, unique_id)
+    sql = "update Participants set discord_id = %s, checkin = %s where unique_id = %s"
+    val = (user.id, True, unique_id)
     mycursor.execute(sql,val)
 
-    sql = "select team,name from Participants where unique_id = %s"
-    val = (unique_id,)
-    mycursor.execute(sql,val)
-    myresult = mycursor.fetchone()
-    print(myresult[0],myresult[1])
     if(mycursor.rowcount >= 1):
-        mydb.commit()   
+        mydb.commit()
+        sql = "select team, name, role, institution from Participants where unique_id = %s"
+        val = (unique_id,)
+        mycursor.execute(sql,val)
+        user_info = mycursor.fetchone()
+        print(user_info[0],user_info[1])   
+        await user.edit(nick=user_info[0]+" - "+user_info[1])
+        if user_info[2] == "speaker":
+            for role in guild.roles:
+                if(role.name == "Konuşmacı"):
+                    await user.add_roles(role)
+                    break
+        elif: user_info[2] == "jury":
+            for role in guild.roles:
+                if (role.name == 'Jüri'):
+                    await user.add_roles(role)
+                    break
+
+        
         await user.create_dm()
         await user.dm_channel.send(embed=messages.register_message)
-        await user.edit(nick=myresult[0]+" - "+myresult[1])
-        await ctx.send("Kayıt başarılı.")
+
+
     else:
         await ctx.send("Kayıt başarısız, id bulunamadı.")
 
