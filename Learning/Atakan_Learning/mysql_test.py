@@ -13,10 +13,12 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()   
 
-mycursor.execute("Select MAX(id) from Participants")
+# sql = "Select name, channel_type, type, id from private_rooms where name = %s or name = %s "
+# val = (, "Independent")
+# mycursor.execute(sql, val)
 
-myresult= mycursor.fetchone()
-
-print(myresult)
-print(type(myresult[0]))
-
+sql = "select team from participants where  name = 'independent' "
+mycursor.execute(sql)
+myresult= mycursor.fetchall()
+for x in myresult:
+    print(x[0] == None)
