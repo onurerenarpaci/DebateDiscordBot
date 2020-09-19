@@ -23,9 +23,19 @@ checkinId = 739551824612294687 #Checkin channel id
 announcementId = 739551824612294687 # anannouncement channel id
 checkinStatus = False # True = Open, False = Close
 checkinMessage = None
-guild = None # discord.utils.get(client.guilds, name=GUILD)
+guild = None # discord.utils.get(bot.guilds, name=GUILD)
 checkinDuration = 1 # 30 minutes
 cutMessageList = []
+motion_messages = {
+	"1": "1. Tur Maçının Konusu:",
+	"2": "2. Tur Maçının Konusu:",
+	"3": "3. Tur Maçının Konusu:",
+	"4": "4. Tur Maçının Konusu:",
+	"5": "5. Tur Maçının Konusu:",
+	"6": "Çeyrek Final Konusu:",
+	"7": "Yarı Final Konusu:",
+	"8": "Final Konusu:",
+}
 
 headers = {"Authorization" : "Token 35792636ef40d2194607066b63e49e3ad3a2076c"}
 
@@ -33,29 +43,30 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('GUILD_NAME')
 
-client = commands.Bot(command_prefix="!")
+bot = commands.Bot(command_prefix="!")
 
-@client.event
+@bot.event
 async def on_ready():
 	global guild
-	guild = discord.utils.get(client.guilds, name=GUILD)
+	guild = discord.utils.get(bot.guilds, name=GUILD)
 	print(
-		f'{client.user} has connected to the following guild:\n'
+		f'{bot.user} has connected to the following guild:\n'
 		f'{guild.name}(id: {guild.id})\n'
 	)
 
-@client.event
-async def on_message(message):
-	if message.author == client.user:
-		return
+# @bot.event
+# async def on_message(message):
+# 	if message.author == bot.user:
+# 		return
 		
-	if message.content == "!check-in":
-		await checkin(message)
+# 	if message.content == "!check-in":
+# 		await checkin(message)
 	
-	if message.content == "!beingcut":
-		await beingcut()
-	
-async def checkin(message):
+# 	if message.content == "!beingcut":
+# 		await beingcut()
+
+@bot.command()	
+async def checkin(ctx):
 	# adds the checkin messaege and green reaction
 	global checkinMessage
 	global checkinStatus
@@ -77,14 +88,14 @@ async def checkin(message):
 	await guild.get_channel(checkinId).send("Check-in süresi doldu.")
 	await checkinUpdate()
 
-@client.event	
+@bot.event	
 async def on_reaction_add(reaction, user):
-	if (not checkinStatus) or (not reaction.message.id == checkinMessage) or (not str(reaction.emoji) == "🟩") or user == client.user:
+	if (not checkinStatus) or (not reaction.message.id == checkinMessage) or (not str(reaction.emoji) == "🟩") or user == bot.user:
 		return
 	
 	print(f'user id={user.id}')
 
-	val = (str(user.id),)
+	val = (user.id,)
 	mycursor.execute("SELECT checkin FROM Participants WHERE discord_id = %s", val)
 	myresult = mycursor.fetchall()
 
@@ -95,7 +106,7 @@ async def on_reaction_add(reaction, user):
 	if myresult[0][0]:
 		return
     
-	val = (True, str(user.id))
+	val = (True, user.id)
 	mydb.commit()
 	mycursor.execute("UPDATE Participants SET checkin = %s WHERE discord_id = %s", val)
 	mydb.commit()
@@ -127,7 +138,8 @@ async def checkinUpdate():
 
 	await session.close()
 
-async def beingcut():
+@bot.command()
+async def beingcut(ctx):
 	global cutMessageList
 	alttabs = "".join("-" for x in range(75))
 	linebreak = "\n" # f stringin içindeki curly bracketlarda backslah konulamıyormuş
@@ -183,7 +195,82 @@ async def beingcut():
 				message = await guild.get_channel(announcementId).send(f'```{linebreak.join(x)}```')
 				cutMessageList.append(message)
 
-	
+@bot.command(name='manual_checkin')
+async def manual_checkin(ctx, discord_id):
 
-client.run(TOKEN)
+	val = (True, int(discord_id))
+	mydb.commit()
+	mycursor.execute("UPDATE Participants SET checkin = %s WHERE discord_id = %s", val)
+	mydb.commit()
+
+	val = (int(discord_id),)
+	mycursor.execute("SELECT id FROM Participants WHERE discord_id = %s", val)
+	myresult = mycursor.fetchall()
+	session = aiohttp.ClientSession()
+
+	url = f'{tabbyurl.url}/api/v1/tournaments/{tabbyurl.tournament}/speakers/{myresult[0][0]}/checkin'
+	async with session.put(url, headers=headers) as resp:
+		print(f'id={myresult[0][0]} status={resp.status}')
+		print(await resp.text())
+
+@bot.command(name='motion')
+async def motion_release(ctx, round):
+	print("motion_release")
+	session = aiohttp.ClientSession()
+	url = f'{tabbyurl.url}/api/v1/tournaments/{tabbyurl.tournament}/motions/{round}'
+	async with session.get(url, headers=headers) as resp:
+		print(resp.status)
+		result = await resp.json()
+
+	await session.close()
+	
+	message = await releaseCountdown()
+	msg = motion_messages[round]
+	await message.edit(content=msg)
+	if len(result["info_slide"]) > 0:
+		msg = f'**```Ön Bilgi: {result["info_slide"]}```**'
+		await guild.get_channel(announcementId).send(msg)
+		message = await releaseCountdown()
+
+	msg = f'**```Konu: {result["text"]}```**\n'
+	await message.edit(content=msg)
+
+	await prepCountdown()
+
+
+async def prepCountdown():
+	duration = 15*60
+	clock = (15,0)
+	message = await guild.get_channel(announcementId).send(f"Kalan hazırlık süresi: `{int(clock[0]):02}:{int(clock[1]):02}`")
+	timestamp = time.time()
+	timedelta = 0
+	while duration > timedelta:
+		await asyncio.sleep(5)
+		timedelta = time.time() - timestamp
+		clock = divmod(max(0,(duration - timedelta)),60)
+		msg = f"Kalan hazırlık süresi: `{int(clock[0]):02}:{int(clock[1]):02}`"
+		await message.edit(content=msg)
+	await message.edit(content='Süre Doldu! @everyone')
+
+async def releaseCountdown():
+	duration = 60
+	clock = (1,0)
+	message = await guild.get_channel(announcementId).send(f"Konunun açıklanmasına: `{int(clock[0]):02}:{int(clock[1]):02}`\n@everyone")
+	timestamp = time.time()
+	timedelta = 0
+	while duration > timedelta:
+		await asyncio.sleep(5)
+		timedelta = time.time() - timestamp
+		clock = divmod(max(0,(duration - timedelta)),60)
+		msg = f"Konunun açıklanmasına: `{int(clock[0]):02}:{int(clock[1]):02}`\n@everyone"
+		await message.edit(content=msg)
+	return message
+
+
+bot.run(TOKEN)
+mydb.commit()
+mycursor.close()
+mydb.close()
+print('Kapatıldı')
+
 

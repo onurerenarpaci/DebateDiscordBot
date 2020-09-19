@@ -1,7 +1,7 @@
 import aiohttp
 import asyncio
 
-url = "https://kutab.herokuapp.com/api/v1/tournaments/bp88team/speakers/85/checkin"
+url = "https://kutab.herokuapp.com/api/v1/tournaments/bp88team/motions/1"
 headers = {"Authorization" : "Token 35792636ef40d2194607066b63e49e3ad3a2076c"}
 
 session = aiohttp.ClientSession()
@@ -14,7 +14,7 @@ session = aiohttp.ClientSession()
 async def main():
 
     #await session.put(url, headers=headers)
-    async with session.put(url, headers=headers) as resp:
+    async with session.get(url, headers=headers) as resp:
         print(resp.status)
         print(await resp.text())
     
