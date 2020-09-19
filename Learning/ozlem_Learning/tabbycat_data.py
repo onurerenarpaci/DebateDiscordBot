@@ -68,7 +68,9 @@ mails_list = []
 for d in adj_dict:
 
    for e in range(len(adj_dict[d])):
-      mycursor.execute("SELECT email FROM Participants WHERE id="+adj_dict[d][e]) 
+      sql = "SELECT email FROM Participants WHERE id = %s"
+      val = (adj_dict[d][e],)
+      mycursor.execute(sql,val)
       result = mycursor.fetchall()
       mails_list.extend(result)
    adj_dict[d] = mails_list[0: len(mails_list)]
@@ -78,7 +80,9 @@ for d in adj_dict:
 for d in teamdict:
 
    for e in range(len(teamdict[d])):
-      mycursor.execute("SELECT email FROM Participants WHERE id="+teamdict[d][e]) 
+      sql = "SELECT email FROM Participants WHERE id = %s"
+      val = (teamdict[d][e],)
+      mycursor.execute(sql,val) 
       result = mycursor.fetchall()
       mails_list.extend(result)
    teamdict[d] = mails_list[0: len(mails_list)]
