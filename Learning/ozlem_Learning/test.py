@@ -1,44 +1,25 @@
-import csv
+import os
+import random
+from dotenv import load_dotenv
+from discord.ext import commands
+import mysql.connector
+import requests
 
-teamdict =	{
-  "A": ["1","2","3"],
-  "B": ["4","5","6"],
-  "C": ["7","8","9"],
-  "D": ["10","11","12"],
-  "E": ["13","14","15"]
-}
+load_dotenv()
+mydb = mysql.connector.connect(
+  host="localhost",
+  user=os.getenv("MYSQL_USER"),
+  password=os.getenv("MYSQL_PASSWORD"),
+  database="debates")
 
-adj_dict =	{
-  "A": ["11","22","33"],
-  "B": ["44","55","66"],
-  "C": ["77","88","99"],
-  "D": ["100","111","122"],
-  "E": ["133","144","155"]
-}
+mycursor = mydb.cursor()
 
-final_dict = teamdict.copy()
-for x in final_dict:
-    final_dict[x]= teamdict[x] + (adj_dict[x])
-    #print(teamdict[x])
-"""
-csvval=csv.writer(open("deneme.csv","w"))
+sql = "SELECT name, team FROM Participants WHERE discord_id = %s"
+val = (693078237756129321,)
+mycursor.execute(sql,val)
+debater = mycursor.fetchone()
 
-csvval.writerow(['deneme 321']+['Test 321'])
+print(debater[0])
+#print(debater_team)
 
-
-print("-----")
-sorted_dic={}
-for i in sorted (final_dict) : 
-    sorted_dic[i]=final_dict[i]
-"""
-csvval=csv.writer(open("deneme4.csv","w"))
-odax=[]
-for x,y in teamdict.items():
-    odax.append(x)
-    for a in y:
-        odax.append(a)
-    csvval.writerows([odax])
-    odax.clear()
-
-print("----")
 

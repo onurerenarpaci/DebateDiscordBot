@@ -17,16 +17,16 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-url_part = "https://kutab.herokuapp.com/api/v1/tournaments/bp88team/rounds/1/pairings"
+round = 1
+url_part = f'https://kutab.herokuapp.com/api/v1/tournaments/bp88team/rounds/{round}/pairings'
 
-header = {"Authorization": os.getenv("TOKEN") } 
-result = requests.get(url_part, headers = header).json()
+headers = {"Authorization": os.getenv("TOKEN") } 
+result = requests.get(url_part, headers = headers).json()
 teamid_list = []
 id_list = []
 teamdict = {}
 adj_dict = {}
 
-result = requests.get(url_part, headers = header).json()
 
 #print(result)
 
@@ -80,38 +80,38 @@ for d in adj_dict:
 for d in teamdict:
 
    for e in range(len(teamdict[d])):
-      sql = "SELECT email FROM Participants WHERE id = %s"
+      sql = "SELECT email FROM Participants WHERE team_id = %s"
       val = (teamdict[d][e],)
       mycursor.execute(sql,val) 
       result = mycursor.fetchall()
       mails_list.extend(result)
    teamdict[d] = mails_list[0: len(mails_list)]
    mails_list.clear()
-
+ 
 #the code that merge two dictionaries
 final_dict = teamdict.copy()
 for x in final_dict:
    final_dict[x] = teamdict[x] + adj_dict[x]
 #print(final_dict)
 #print("---------------")
-#the code that sort final_dict (doesn't work properly)
-"""
+
+#the code that sort final_dict
 sorted_dict={}
 
 for i in sorted (final_dict) : 
     sorted_dict[i]=final_dict[i]
 
-print(sorted_dict)
-"""
+#print(sorted_dict)
+
 #the code that creates csv files
-venue_number=len(final_dict.keys())
+venue_number=len(sorted_dict.keys())
 countr = 0
 csvval1=csv.writer(open("csvfile1.csv","w"))
 csvval2=csv.writer(open("csvfile2.csv","w"))
 room=[]
 csvval1.writerow(['Pre-assign Room Name'] + ['Email Address'])
 csvval2.writerow(['Pre-assign Room Name'] + ['Email Address'])
-for x,y in final_dict.items():
+for x,y in sorted_dict.items():
    room.append(x)
    for a in y:  
       parts=str(a)   
