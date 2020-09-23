@@ -14,7 +14,7 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()    
 
-mycursor.execute("CREATE TABLE Participants (name VARCHAR(64), email VARCHAR(64), role VARCHAR(64) , team VARCHAR(64), team_id INT, institution VARCHAR(64), id INT, url_key VARCHAR(64), checkin BOOLEAN, cut_status BOOLEAN, discord_id INT, unique_id VARCHAR(6)) DEFAULT CHARSET=utf8mb4")
+mycursor.execute("CREATE TABLE Participants (name VARCHAR(64), email VARCHAR(64), role VARCHAR(64) , team VARCHAR(64), team_id INT, institution VARCHAR(64), id INT, url_key VARCHAR(64), checkin BOOLEAN, cut_status BOOLEAN, discord_id BIGINT UNSIGNED, unique_id VARCHAR(6)) DEFAULT CHARSET=utf8mb4")
 
 #File names
 uniqe_ids_file_name = "unique_ids.txt"
@@ -48,7 +48,7 @@ for team in teams:
         "speaker",
         team['short_name'],
         team["id"],
-        institutions[int(team["institution"].split("/")[-1])],
+        institutions[int(team["institution"].split("/")[-1])] if team["institution"] != None else "Independent",
         _speaker["id"],
         _speaker["url_key"],
         False,
@@ -74,7 +74,7 @@ for adj in adj_list:
     adjudicator = (adj["name"],
     adj["email"],
     "jury",
-    institutions[int(adj["institution"].split('/')[-1])],
+    institutions[int(adj["institution"].split('/')[-1])] if adj["institution"] != None else "Independent",
     adj["id"],
     adj["url_key"],
     False,

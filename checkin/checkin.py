@@ -203,6 +203,10 @@ async def manual_checkin(ctx, discord_id):
 	mycursor.execute("UPDATE Participants SET checkin = %s WHERE discord_id = %s", val)
 	mydb.commit()
 
+	if(mycursor.rowcount <= 0):
+		print(f'user is not registered or already checked-in. id= {discord_id}')
+		return
+
 	val = (int(discord_id),)
 	mycursor.execute("SELECT id FROM Participants WHERE discord_id = %s", val)
 	myresult = mycursor.fetchall()
@@ -212,6 +216,8 @@ async def manual_checkin(ctx, discord_id):
 	async with session.put(url, headers=headers) as resp:
 		print(f'id={myresult[0][0]} status={resp.status}')
 		print(await resp.text())
+	
+	await session.close()
 
 @bot.command(name='motion')
 async def motion_release(ctx, round):
