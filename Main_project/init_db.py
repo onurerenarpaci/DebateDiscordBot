@@ -7,6 +7,7 @@ import discord
 load_dotenv()
 
 headers = {"Authorization": os.getenv("TABBYCAT_TOKEN")}
+
 mydb = mysql.connector.connect(
     host="localhost",
     user=os.getenv("MYSQL_USER"),
@@ -49,7 +50,7 @@ for team in teams:
         "speaker",
         team['short_name'],
         team["id"],
-        institutions[int(team["institution"].split("/")[-1])] if team["institution"] != None else "Independent",
+        institutions[int(team["institution"].split("/")[-1])] if team["institution"] != None else "Open",
         _speaker["id"],
         _speaker["url_key"],
         False,
@@ -154,9 +155,12 @@ async def on_ready():
         
         
         
-
+        
+print("initialization completed.")
     
 
 client.run(TOKEN)
-
-
+mydb.commit()
+mycursor.close()
+mydb.close()
+print("Connection closed.")

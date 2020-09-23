@@ -1,4 +1,3 @@
-# bot.py
 import os
 import asyncio
 import discord
@@ -6,25 +5,28 @@ from discord.ext import commands
 import time
 from dotenv import load_dotenv
 import aiohttp
-import tabbyurl
 import mysql.connector
 import math
 
+load_dotenv()
+headers = {"Authorization": os.getenv("TABBYCAT_TOKEN")}
+
 mydb = mysql.connector.connect(
 	host="localhost",
-	user="onur",
-	password="koc2020",
-	database="firstdatabase"
-)
+	user=os.getenv("MYSQL_USER"),
+	password=os.getenv("MYSQL_PASSWORD"),
+	database="debate")
+
 
 mycursor = mydb.cursor()
 
-checkinId = 739551824612294687 #Checkin channel id
-announcementId = 739551824612294687 # announcement channel id
+tabbyurl = os.getenv("URL")
+tournament = os.getenv("TOURNAMENT")
+checkinId =  int(os.getenv("CHECKIN_CHANNEL_ID"))#Checkin channel id
+announcementId = int(os.getenv("ANNOUNCEMENT_CHANNEL_ID")) # announcement channel id
 checkinStatus = False # True = Open, False = Close
 checkinMessage = None
-guild = None # discord.utils.get(bot.guilds, name=GUILD)
-checkinDuration = 1 # 30 minutes
+checkinDuration = 30 # 30 minutes
 cutMessageList = []
 motion_messages = {
 	"1": "1. Tur Maçının Konusu:",
@@ -37,11 +39,8 @@ motion_messages = {
 	"8": "Final Konusu:",
 }
 
-headers = {"Authorization" : "Token 35792636ef40d2194607066b63e49e3ad3a2076c"}
-
-load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD = os.getenv('GUILD_NAME')
+GUILD = os.getenv('DISCORD_GUILD')
 
 bot = commands.Bot(command_prefix="!")
 
@@ -53,17 +52,6 @@ async def on_ready():
 		f'{bot.user} has connected to the following guild:\n'
 		f'{guild.name}(id: {guild.id})\n'
 	)
-
-# @bot.event
-# async def on_message(message):
-# 	if message.author == bot.user:
-# 		return
-		
-# 	if message.content == "!check-in":
-# 		await checkin(message)
-	
-# 	if message.content == "!beingcut":
-# 		await beingcut()
 
 @bot.command()	
 async def checkin(ctx):
@@ -122,7 +110,7 @@ async def checkinUpdate():
 	session = aiohttp.ClientSession()
     
 	for x in myresult:
-		url = f'{tabbyurl.url}/api/v1/tournaments/{tabbyurl.tournament}/speakers/{x[0]}/checkin'
+		url = f'{tabbyurl}/api/v1/tournaments/{tournament}/speakers/{x[0]}/checkin'
 		async with session.put(url, headers=headers) as resp:
 			print(f'id={x[0]} status={resp.status}')
 			print(await resp.text())
@@ -131,7 +119,7 @@ async def checkinUpdate():
 	myresult = mycursor.fetchall()
 
 	for x in myresult:
-		url = f'{tabbyurl.url}/api/v1/tournaments/{tabbyurl.tournament}/adjudicators/{x[0]}/checkin'
+		url = f'{tabbyurl}/api/v1/tournaments/{tournament}/adjudicators/{x[0]}/checkin'
 		async with session.put(url, headers=headers) as resp:
 			print(f'id={x[0]} status={resp.status}')
 			print(await resp.text())
@@ -208,7 +196,7 @@ async def manual_checkin(ctx, discord_id):
 	myresult = mycursor.fetchall()
 	session = aiohttp.ClientSession()
 
-	url = f'{tabbyurl.url}/api/v1/tournaments/{tabbyurl.tournament}/speakers/{myresult[0][0]}/checkin'
+	url = f'{tabbyurl}/api/v1/tournaments/{tournament}/speakers/{myresult[0][0]}/checkin'
 	async with session.put(url, headers=headers) as resp:
 		print(f'id={myresult[0][0]} status={resp.status}')
 		print(await resp.text())
@@ -217,7 +205,7 @@ async def manual_checkin(ctx, discord_id):
 async def motion_release(ctx, round):
 	print("motion_release")
 	session = aiohttp.ClientSession()
-	url = f'{tabbyurl.url}/api/v1/tournaments/{tabbyurl.tournament}/motions/{round}'
+	url = f'{tabbyurl}/api/v1/tournaments/{tournament}/motions/{round}'
 	async with session.get(url, headers=headers) as resp:
 		print(resp.status)
 		result = await resp.json()
@@ -265,6 +253,13 @@ async def releaseCountdown():
 		msg = f"Konunun açıklanmasına: `{int(clock[0]):02}:{int(clock[1]):02}`\n@everyone"
 		await message.edit(content=msg)
 	return message
+
+
+
+@bot.command(name='geribildirim')
+async def feedback(ctx):
+	await ctx.send("```Size ait Tabbycat bağlantısını kullanarak geri bildirim verebilirsiniz.```")
+
 
 
 bot.run(TOKEN)

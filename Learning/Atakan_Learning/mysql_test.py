@@ -13,12 +13,17 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()   
 
-# sql = "Select name, channel_type, type, id from private_rooms where name = %s or name = %s "
-# val = (, "Independent")
-# mycursor.execute(sql, val)
+sql = "Select name, channel_type, type, id from private_rooms where name = %s or name = %s "
+val = ("Dorwini2on", "3Dorwinion DG")
+mycursor.execute(sql,val)
+print("row count",mycursor.rowcount)
 
-sql = "select team from participants where  name = 'independent' "
-mycursor.execute(sql)
+# sql = "select team from participants where  name = 'independent' "
+# mycursor.execute(sql)
+# sql = "select name, institution from participants where unique_id = %s"
+# val = ("817485",)
+# mycursor.execute(sql, val)
 myresult= mycursor.fetchall()
 for x in myresult:
-    print(x[0] == None)
+    print("Ses")
+    print(x)
