@@ -117,11 +117,11 @@ for x,y in sorted_dict.items():
       parts=str(a)   
       room.append(parts[2:-3])
 
-   countr += 1
-   if countr<(venue_number/2) :
+   if countr<=(venue_number/2) :
       csvval1.writerows([room])
    else:
       csvval2.writerows([room])
+   countr += 1
    room.clear()
 
 
