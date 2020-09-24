@@ -56,8 +56,8 @@ async def draw (ctx, round):
 			val = (teamdict[d][e],)
 			#(following line has an error)
 			mycursor.execute(sql,val)
-			result = mycursor.fetchall()
-			discordID_list.extend(x[0] for x in result)
+			speakers = mycursor.fetchall()
+			discordID_list.extend(x[0] for x in speakers)
 		teamdict[d] = discordID_list.copy()
 		discordID_list.clear()
 
@@ -65,9 +65,7 @@ async def draw (ctx, round):
 	sorted_teamdict = {}
 	for i in sorted (teamdict) : 
 		sorted_teamdict[i]=teamdict[i]
-	
-	print(sorted_teamdict)
-	
+
 	venue_number = len(sorted_teamdict.keys())
 	counter = 0
 	zoom_url = ""
@@ -77,10 +75,7 @@ async def draw (ctx, round):
 		val = (x,)
 		mycursor.execute(sql,val)
 		venue_tup = mycursor.fetchall()
-		if venue_tup != None:
-			venue_name = venue_tup[0][0]
-		else:
-			venue_name = venue_tup
+		venue_name = venue_tup[0][0]
 		if counter <= (venue_number/2) :
 			zoom_url = zoom_url1
 		else:
@@ -94,34 +89,40 @@ async def draw (ctx, round):
 				side = 'MA'
 			else :
 				side = 'HA'
-			for z in sorted_teamdict[x][y]:
-				sql = "SELECT name,team from Participants WHERE discord_id = %s"
-				val = (z,)
+
+			if sorted_teamdict[x][y] != None:
+				sql = "SELECT name from Participants WHERE discord_id = %s AND role = %s"
+				val = (sorted_teamdict[x][y],'speaker')
 				mycursor.execute(sql,val)
-				debater = mycursor.fetchall()
-				if debater != None:
-					debater_name = debater[0][0]
-					debater_team = debater[0][1]
-				else:
-					debater_name = debater_team = None
+				debater_name_tup = mycursor.fetchall()
+				debater_name = debater_name_tup[0][0]
+				sql = "SELECT team from Participants WHERE discord_id = %s AND role = %s"
+				val = (sorted_teamdict[x][y],'speaker')
+				mycursor.execute(sql,val)
+				debater_team_tup = mycursor.fetchall()
+				debater_team = debater_team_tup[0][0]
+				sql = "SELECT url_key from Participants WHERE discord_id = %s AND role = %s"
+				val = (sorted_teamdict[x][y],'speaker')
+				mycursor.execute(sql,val)
+				url_key_tup = mycursor.fetchall()
+				url_key = str(url_key_tup[0][0])
 				embed = discord.Embed(
 					title = f'{round}. TUR KURASI',
 					description = f'{debater_name}, {debater_team} takımı için gerekli bilgiler:',
 					colour = 0xce0203
 				)   
-
 				embed.set_footer(text = 'Eylül 2020')
 				#embed.set_image(url='https://cdn.discordapp.com/attachments/750848362156392531/757671571438567584/Ku_Munazara.jpg')
 				embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/750848362156392531/757684239914500146/Ku_Munazara_turnuva.jpg')
 				embed.set_author(name= 'KU AÇIK 2020 ÇEVRİMİÇİ',
 				icon_url='https://cdn.discordapp.com/attachments/750848362156392531/757672480239386714/Ku_Munazara_icon.jpg')
-				embed.add_field(name=f'[Zoom görüşmenize katılmak için buraya tıklayın]({zoom_url})', value = '[Size özel Tabbycat linkiniz](https://www.oxfordlearnersdictionaries.com/)', inline= False)
+				embed.add_field(name='Bina Linki', value = f'[Zoom görüşmenize katılmak için buraya tıklayın]({zoom_url})', inline= False)
+				embed.add_field(name='Tabbycat Linki', value = f'[Size özel Tabbycat linkiniz](https://kutab.herokuapp.com/bp88team/{url_key})', inline= False)
 				embed.add_field(name='Salon', value = venue_name, inline= True)
 				embed.add_field(name='Pozisyon', value = side, inline= True)
-				if z != None:
-					user = bot.get_user(z)
-					await user.send(embed = embed)
-			counter += 1
+				user = bot.get_user(sorted_teamdict[x][y])
+				await user.send(embed = embed)
+		counter += 1
 
 	chair_dict = {}
 	panel_dict = {}
@@ -140,38 +141,31 @@ async def draw (ctx, round):
 		val = (chair_id,)
 		mycursor.execute(sql,val)
 		chair_dc_tup = mycursor.fetchall()
-		if chair_dc_tup != None:
-			chair_dc = chair_dc_tup[0][0]
-			chair_dict[ven_id] = chair_dc
-		else:
-			chair_dict[ven_id] = chair_dc_tup
+		chair_dc = chair_dc_tup[0][0]
+		chair_dict[ven_id] = chair_dc
+
 		for b in (result[j].get("adjudicators").get("panellists")):
 			pan_id = b.split('/')[-1]
 			sql = "SELECT discord_id FROM Participants WHERE id = %s"
 			val = (pan_id,)
 			mycursor.execute(sql,val)
 			pan_dc_tup = mycursor.fetchall()
-			if pan_dc_tup != None:
-				pan_dc = pan_dc_tup[0][0]
-				pan_list.append(pan_dc)
-			else:
-				pan_list.append(pan_dc_tup)
+			pan_dc = pan_dc_tup[0][0]
+			pan_list.append(pan_dc)
 		panel_dict[ven_id] = pan_list[0: len(pan_list)]
 		pan_list.clear()
-		
+
 		for c in (result[j].get("adjudicators").get("trainees")):
 			tra_id = c.split('/')[-1]
 			sql = "SELECT discord_id FROM Participants WHERE id = %s"
 			val = (tra_id,)
 			mycursor.execute(sql,val)
 			tra_dc_tup = mycursor.fetchall()
-			if tra_dc_tup != None:
-				tra_dc = tra_dc_tup[0][0]
-				tra_list.append(tra_dc)
-			else:
-				tra_list.append(tra_dc_tup)
+			tra_dc = tra_dc_tup[0][0]
+			tra_list.append(tra_dc)
 		tra_dict[ven_id] = tra_list[0: len(tra_list)]
 		tra_list.clear()
+		
 		j += 1
 
 	venue_number = len(chair_dict.keys())
@@ -186,126 +180,122 @@ async def draw (ctx, round):
 		sort_panel_dict[b] = panel_dict[b]
 	for c in sorted (tra_dict):
 		sort_tra_dict[c] = tra_dict[c]
-
-	print(sort_chair_dict)
-	print(sort_panel_dict)
-	print(sort_tra_dict)
-   
+ 
 	#the code that send messages
 	counter=0
 	for d in sort_chair_dict:
-		sql = "SELECT VenueName from Venues WHERE VenueID = %s"
-		val = (d,)
-		mycursor.execute(sql,val)
-		venue_name_tup = mycursor.fetchall()
-		if venue_name_tup != None:
+		if sort_chair_dict[d] != None:
+			sql = "SELECT VenueName from Venues WHERE VenueID = %s"
+			val = (d,)
+			mycursor.execute(sql,val)
+			venue_name_tup = mycursor.fetchall()
 			venue_name = venue_name_tup[0][0]
-		else:
-			venue_name = venue_name_tup
-		if counter <= (venue_number/2) :
-			zoom_url = zoom_url1
-		else:
-			zoom_url = zoom_url2
-		sql = "SELECT name from Participants WHERE discord_id = %s AND team_id IS NULL"
-		val = (sort_chair_dict[d],)
-		mycursor.execute(sql,val)
-		chair_name_tup = mycursor.fetchall()
-		if chair_name_tup != None:
+			if counter <= (venue_number/2) :
+				zoom_url = zoom_url1
+			else:
+				zoom_url = zoom_url2
+			sql = "SELECT name from Participants WHERE discord_id = %s AND role = %s"
+			val = (sort_chair_dict[d],'jury')
+			mycursor.execute(sql,val)
+			chair_name_tup = mycursor.fetchall()
 			chair_name = chair_name_tup[0][0]
-		else:
-			chair_name = chair_name_tup
-		embed = discord.Embed(
-			title = f'{round}. TUR KURASI',
-			description = f'{chair_name}, baş jüri için gerekli bilgiler:',
-			colour = 0xce0203,
-		)
-		embed.set_footer(text= "Eylül 2020")
-		embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/750848362156392531/757684239914500146/Ku_Munazara_turnuva.jpg')
-		embed.add_field(name=f'[Zoom görüşmenize katılmak için buraya tıklayın]({zoom_url})', value = '[Size özel Tabbycat linkiniz](https://www.oxfordlearnersdictionaries.com/)', inline= False)
-		embed.add_field(name='Salon', value = venue_name, inline= True)
-		embed.add_field(name='Pozisyon', value = "Baş Jüri", inline= True)
-		if sort_chair_dict[d] != None :
-			user = bot.get_user(sort_chair_dict[d]) 
-			await user.send(embed = embed)
+			sql = "SELECT url_key from Participants WHERE discord_id = %s AND role = %s"
+			val = (sort_chair_dict[d],'jury')
+			mycursor.execute(sql,val)
+			url_key_tup = mycursor.fetchall()
+			url_key = str(url_key_tup[0][0])
+			embed = discord.Embed(
+				title = f'{round}. TUR KURASI',
+				description = f'{chair_name}, baş jüri için gerekli bilgiler:',
+				colour = 0xce0203,
+			)
+			embed.set_footer(text= "Eylül 2020")
+			embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/750848362156392531/757684239914500146/Ku_Munazara_turnuva.jpg')
+			embed.add_field(name='Bina Linki', value = f'[Zoom görüşmenize katılmak için buraya tıklayın]({zoom_url})', inline= False)
+			embed.add_field(name='Tabbycat Linki', value = f'[Size özel Tabbycat linkiniz](https://kutab.herokuapp.com/bp88team/{url_key})', inline= False)
+			embed.add_field(name='Salon', value = venue_name, inline= True)
+			embed.add_field(name='Pozisyon', value = "Baş Jüri", inline= True)
+			if sort_chair_dict[d] != None :
+				user = bot.get_user(sort_chair_dict[d]) 
+				await user.send(embed = embed)
 	counter += 1
-	print(sort_panel_dict)
-	
+
 	counter=0
 	for e in sort_panel_dict:
-		sql = "SELECT VenueName from Venues WHERE VenueID = %s"
-		val = (e,)
-		mycursor.execute(sql,val)
-		venue_name_tup = mycursor.fetchall()
-		if venue_name_tup != None:
-			venue_name = venue_name_tup[0][0]
-		else:
-			venue_name = venue_name_tup
-		print(venue_name)
-		if counter <= (venue_number/2) :
-			zoom_url = zoom_url1
-		else:
-			zoom_url = zoom_url2
-		for f in range(len(sort_panel_dict[e])):
-			sql = "SELECT name from Participants WHERE discord_id = %s AND team_id IS NULL"
-			val = (sort_panel_dict[e][f],)
+		if len(e) > 0:
+			sql = "SELECT VenueName from Venues WHERE VenueID = %s"
+			val = (e,)
 			mycursor.execute(sql,val)
-			pan_name_tup = mycursor.fetchall()
-			if pan_name_tup != None:
-				pan_name = pan_name_tup[0][0]
+			venue_name_tup = mycursor.fetchall()
+			venue_name = venue_name_tup[0][0]
+			if counter <= (venue_number/2) :
+				zoom_url = zoom_url1
 			else:
-				pan_name = pan_name_tup
-			print(pan_name)
-			embed = discord.Embed(
-				title = f'{round}. TUR KURASI',
-				description = f'{pan_name}, yan jüri için gerekli bilgiler:',
-				colour = 0xce0203,
-			)
-			embed.set_footer(text= "Eylül 2020")
-			embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/750848362156392531/757684239914500146/Ku_Munazara_turnuva.jpg')
-			embed.add_field(name= f'[Zoom görüşmenize katılmak için buraya tıklayın]({zoom_url})', value = '[Size özel Tabbycat linkiniz](https://www.oxfordlearnersdictionaries.com/)', inline= False)
-			embed.add_field(name='Salon', value = venue_name, inline= True)
-			embed.add_field(name='Pozisyon', value = "Yan Jüri", inline= True)
-			if panel_dict[e][f] != None:
-				user = bot.get_user(sort_panel_dict[e][f])
-				await user.send(embed = embed)
+				zoom_url = zoom_url2
+			for f in range(len(sort_panel_dict[e])):
+				if sort_panel_dict[e][f] != None:
+					sql = "SELECT name from Participants WHERE discord_id = %s AND role = %s"
+					val = (sort_panel_dict[e][f], 'jury')
+					mycursor.execute(sql,val)
+					pan_name_tup = mycursor.fetchall()
+					pan_name = pan_name_tup[0][0]
+					sql = "SELECT url_key from Participants WHERE discord_id = %s AND role = %s"
+					val = (sort_panel_dict[e][f], 'jury')
+					mycursor.execute(sql,val)
+					url_key_tup = mycursor.fetchall()
+					url_key = str(url_key_tup[0][0])
+					embed = discord.Embed(
+						title = f'{round}. TUR KURASI',
+						description = f'{pan_name}, yan jüri için gerekli bilgiler:',
+						colour = 0xce0203,
+					)
+					embed.set_footer(text= "Eylül 2020")
+					embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/750848362156392531/757684239914500146/Ku_Munazara_turnuva.jpg')
+					embed.add_field(name='Bina Linki', value = f'[Zoom görüşmenize katılmak için buraya tıklayın]({zoom_url})', inline= False)
+					embed.add_field(name='Tabbycat Linki', value = f'[Size özel Tabbycat linkiniz](https://kutab.herokuapp.com/bp88team/{url_key})', inline= False)
+					embed.add_field(name='Salon', value = venue_name, inline= True)
+					embed.add_field(name='Pozisyon', value = "Yan Jüri", inline= True) 
+					user = bot.get_user(sort_panel_dict[e][f])
+					await user.send(embed = embed)
 		counter += 1
-	
+
 	counter = 0
 	for g in sort_tra_dict:
-		sql = "SELECT VenueName from Venues WHERE VenueID = %s"
-		val = (g,)
-		mycursor.execute(sql,val)
-		venue_name_tup = mycursor.fetchall()
-		if venue_name_tup != None:
-			venue_name = venue_name_tup[0][0]
-		else:
-			venue_name = venue_name_tup
-		if counter <= (venue_number/2) :
-			zoom_url = zoom_url1
-		else:
-			zoom_url = zoom_url2
-		for h in range(len(sort_tra_dict[g])):
-			sql = "SELECT name from Participants WHERE discord_id = %s AND team_id IS NULL"
-			val = (sort_tra_dict[g][h],)
+		if len(g) > 0:
+			sql = "SELECT VenueName from Venues WHERE VenueID = %s"
+			val = (g,)
 			mycursor.execute(sql,val)
-			tra_name_tup = mycursor.fetchall()
-			if tra_name_tup != None:
-				tra_name = tra_name_tup[0][0]
+			venue_name_tup = mycursor.fetchall()
+			venue_name = venue_name_tup[0][0]
+			if counter <= (venue_number/2) :
+				zoom_url = zoom_url1
 			else:
-				tra_name = tra_name_tup
-			embed = discord.Embed(
-				title = f'{round}. TUR KURASI',
-				description = f'{tra_name}, izleyici için gerekli bilgiler:',
-				colour = 0xce0203,
-			)
-			embed.set_footer(text= "Eylül 2020")
-			embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/750848362156392531/757684239914500146/Ku_Munazara_turnuva.jpg')
-			embed.add_field(name=f'[Zoom görüşmenize katılmak için buraya tıklayın]({zoom_url})', value = '[Size özel Tabbycat linkiniz](https://www.oxfordlearnersdictionaries.com/)', inline= False)
-			embed.add_field(name='Salon', value = venue_name, inline= True)
-			embed.add_field(name='Pozisyon', value = "İzleyici", inline= True)
-			if sort_tra_dict[g][h] != None:
-				user = bot.get_user(sort_tra_dict[g][h])
-				await user.send(embed = embed)
+				zoom_url = zoom_url2
+			for h in range(len(sort_tra_dict[g])):
+				if sort_tra_dict[g][h] != None:
+					sql = "SELECT name from Participants WHERE discord_id = %s AND role = %s"
+					val = (sort_tra_dict[g][h], 'jury')
+					mycursor.execute(sql,val)
+					tra_name_tup = mycursor.fetchall()
+					tra_name = tra_name_tup[0][0]
+					sql = "SELECT url_key from Participants WHERE discord_id = %s AND role = %s"
+					val = (sort_tra_dict[g][h], 'jury')
+					mycursor.execute(sql,val)
+					url_key_tup = mycursor.fetchall()
+					url_key = str(url_key_tup[0][0])
+					embed = discord.Embed(
+						title = f'{round}. TUR KURASI',
+						description = f'{tra_name}, izleyici için gerekli bilgiler:',
+						colour = 0xce0203,
+					)
+					embed.set_footer(text= "Eylül 2020")
+					embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/750848362156392531/757684239914500146/Ku_Munazara_turnuva.jpg')
+					embed.add_field(name='Bina Linki', value = f'[Zoom görüşmenize katılmak için buraya tıklayın]({zoom_url})', inline= False)
+					embed.add_field(name='Tabbycat Linki', value = f'[Size özel Tabbycat linkiniz](https://kutab.herokuapp.com/bp88team/{url_key})', inline= False)
+					embed.add_field(name='Salon', value = venue_name, inline= True)
+					embed.add_field(name='Pozisyon', value = "İzleyici", inline= True)
+					user = bot.get_user(sort_tra_dict[g][h])
+					await user.send(embed = embed)
 		counter += 1
 
 bot.run(TOKEN)
