@@ -33,7 +33,6 @@ async def draw (ctx, round):
     teamid_list = []
     id_list = []
     teamdict = {}
-    adj_dict = {}
     
     i=0
     for x in result:
@@ -84,9 +83,7 @@ async def draw (ctx, round):
                 side = 'HK'
             else :
                 side = 'MK'
-            print("side")
             for z in sorted_teamdict[x][y]:
-                print("z")
                 sql = "SELECT name,team from Participants WHERE discord_id = %s"
                 val = (z,)
                 mycursor.execute(sql,val)
