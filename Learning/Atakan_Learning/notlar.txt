@@ -1,1 +1,0 @@
-on_ready event'i gerceklestiginde kayit aciklamasinin yollanmasi

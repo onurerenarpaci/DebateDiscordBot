@@ -56,6 +56,8 @@ async def register(ctx, unique_id):
                     total_lenght += (len(user_name[j])+1)
                     j += 1
                     teams_turn = True
+                elif teams_turn == False and j == len(user_name):
+                    teams_turn = True
                 if j == len(user_name) and i == len(team_name):
                     break
                     
