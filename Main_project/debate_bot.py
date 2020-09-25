@@ -259,7 +259,6 @@ async def releaseCountdown():
 	return message
 
 
-
 @bot.command(name='geribildirim')
 async def feedback(ctx):
 	await ctx.send("```Size ait Tabbycat bağlantısını kullanarak geri bildirim verebilirsiniz.```")
@@ -267,15 +266,30 @@ async def feedback(ctx):
 @bot.command(name = "draw")
 async def draw (ctx, round):
 	#the code that import tabbycat debates
-	url = f'https://kutab.herokuapp.com/api/v1/tournaments/bp88team/rounds/{round}/pairings'
-	headers = {"Authorization": "Token a11cdf6cbe4ad2d515262f136a5b20d79d3245f3"}
-	result = requests.get(url, headers = headers).json()
+	url = f'{tabbyurl}/api/v1/tournaments/{tournament}/rounds/{round}/pairings'
+	session = aiohttp.ClientSession()
+	async with session.get(url, headers=headers) as resp:
+		print(resp.status)
+		result = await resp.json()
+	await session.close()
 	zoom_url1 = "https://kocun.zoom.us/j/94108431105"
 	zoom_url2 = "https://kocun.zoom.us/j/9402351069"
 	#print(result)
 
+	duration = 60
+	clock = (1,0)
+	message = await guild.get_channel(announcementId).send(f"Kuranın açıklanmasına: `{int(clock[0]):02}:{int(clock[1]):02}`\n@everyone")
+	timestamp = time.time()
+	timedelta = 0
+	while duration > timedelta:
+		await asyncio.sleep(5)
+		timedelta = time.time() - timestamp
+		clock = divmod(max(0,(duration - timedelta)),60)
+		msg = f"Kuranın açıklanmasına: `{int(clock[0]):02}:{int(clock[1]):02}`\n@everyone"
+		await message.edit(content=msg)
+	await message.delete()
+
 	teamid_list = []
-	id_list = []
 	teamdict = {}
 
 	#the code that takes team ids from tabbycat data and create a venue-team id list dictionary
@@ -453,6 +467,8 @@ async def draw (ctx, round):
 			)
 			embed.set_footer(text= "Eylül 2020")
 			embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/750848362156392531/757684239914500146/Ku_Munazara_turnuva.jpg')
+			embed.set_author(name= 'KU AÇIK 2020 ÇEVRİMİÇİ',
+			icon_url='https://cdn.discordapp.com/attachments/750848362156392531/757672480239386714/Ku_Munazara_icon.jpg')
 			embed.add_field(name='Bina Linki', value = f'[Zoom görüşmenize katılmak için buraya tıklayın]({zoom_url})', inline= False)
 			embed.add_field(name='Tabbycat Linki', value = f'[Size özel Tabbycat linkiniz](https://kutab.herokuapp.com/bp88team/{url_key})', inline= False)
 			embed.add_field(name='Salon', value = venue_name, inline= True)
@@ -493,6 +509,8 @@ async def draw (ctx, round):
 					)
 					embed.set_footer(text= "Eylül 2020")
 					embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/750848362156392531/757684239914500146/Ku_Munazara_turnuva.jpg')
+					embed.set_author(name= 'KU AÇIK 2020 ÇEVRİMİÇİ',
+					icon_url='https://cdn.discordapp.com/attachments/750848362156392531/757672480239386714/Ku_Munazara_icon.jpg')					
 					embed.add_field(name='Bina Linki', value = f'[Zoom görüşmenize katılmak için buraya tıklayın]({zoom_url})', inline= False)
 					embed.add_field(name='Tabbycat Linki', value = f'[Size özel Tabbycat linkiniz](https://kutab.herokuapp.com/bp88team/{url_key})', inline= False)
 					embed.add_field(name='Salon', value = venue_name, inline= True)
@@ -532,6 +550,8 @@ async def draw (ctx, round):
 					)
 					embed.set_footer(text= "Eylül 2020")
 					embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/750848362156392531/757684239914500146/Ku_Munazara_turnuva.jpg')
+					embed.set_author(name= 'KU AÇIK 2020 ÇEVRİMİÇİ',
+					icon_url='https://cdn.discordapp.com/attachments/750848362156392531/757672480239386714/Ku_Munazara_icon.jpg')
 					embed.add_field(name='Bina Linki', value = f'[Zoom görüşmenize katılmak için buraya tıklayın]({zoom_url})', inline= False)
 					embed.add_field(name='Tabbycat Linki', value = f'[Size özel Tabbycat linkiniz](https://kutab.herokuapp.com/bp88team/{url_key})', inline= False)
 					embed.add_field(name='Salon', value = venue_name, inline= True)
