@@ -126,8 +126,9 @@ for x,y in sorted_dict.items():
          csvval1.writerows([room])
       else:
          csvval2.writerows([room])
+      room.clear()
    countr += 1
-   room.clear()
+   
 
 
 
