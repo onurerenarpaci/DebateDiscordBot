@@ -99,7 +99,7 @@ for x in final_dict:
 sorted_dict={}
 
 for i in sorted (final_dict) : 
-    sorted_dict[i]=final_dict[i]
+   sorted_dict[i]=final_dict[i]
 
 #print(sorted_dict)
 
@@ -112,15 +112,20 @@ room=[]
 csvval1.writerow(['Pre-assign Room Name'] + ['Email Address'])
 csvval2.writerow(['Pre-assign Room Name'] + ['Email Address'])
 for x,y in sorted_dict.items():
-   room.append(x)
+   sql = "SELECT VenueName from Venues WHERE VenueID = %s"
+   val = (int(x),)
+   mycursor.execute(sql,val)
+   venue_tup = mycursor.fetchall()
+   venue_name = str(venue_tup[0][0])
+   room.append(venue_name)
    for a in y:  
       parts=str(a)   
       room.append(parts[2:-3])
 
-   if countr<=(venue_number/2) :
-      csvval1.writerows([room])
-   else:
-      csvval2.writerows([room])
+      if countr<=(venue_number/2) :
+         csvval1.writerows([room])
+      else:
+         csvval2.writerows([room])
    countr += 1
    room.clear()
 
