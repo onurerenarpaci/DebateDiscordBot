@@ -272,8 +272,7 @@ async def draw (ctx, round):
 		print(resp.status)
 		result = await resp.json()
 	await session.close()
-	zoom_url1 = "https://kocun.zoom.us/j/94108431105"
-	zoom_url2 = "https://kocun.zoom.us/j/9402351069"
+
 	#print(result)
 
 	duration = 60
@@ -323,19 +322,17 @@ async def draw (ctx, round):
 		sorted_teamdict[i]=teamdict[i]
 
 	venue_number = len(sorted_teamdict.keys())
-	counter = 0
+
 	zoom_url = ""
 	#the code that send messages to speakers
 	for x in sorted_teamdict:
-		sql = "SELECT VenueName from Venues WHERE VenueID = %s"
+		sql = "SELECT VenueName, zoom_link from Venues WHERE VenueID = %s"
 		val = (x,)
 		mycursor.execute(sql,val)
 		venue_tup = mycursor.fetchall()
 		venue_name = venue_tup[0][0]
-		if counter <= (venue_number/2) :
-			zoom_url = zoom_url1
-		else:
-			zoom_url = zoom_url2
+		zoom_url = venue_tup[0][1]
+
 		for y in range(len(sorted_teamdict[x])):
 			if y == 0 or y ==1:
 				side = 'MK'
@@ -378,7 +375,7 @@ async def draw (ctx, round):
 				embed.add_field(name='Pozisyon', value = side, inline= True)
 				user = bot.get_user(sorted_teamdict[x][y])
 				await user.send(embed = embed)
-		counter += 1
+
 
 	chair_dict = {}
 	panel_dict = {}
@@ -438,18 +435,16 @@ async def draw (ctx, round):
 		sort_tra_dict[c] = tra_dict[c]
  
 	#the code that send messages
-	counter=0
+
 	for d in sort_chair_dict:
 		if sort_chair_dict[d] != None:
-			sql = "SELECT VenueName from Venues WHERE VenueID = %s"
+			sql = "SELECT VenueName, zoom_link from Venues WHERE VenueID = %s"
 			val = (d,)
 			mycursor.execute(sql,val)
-			venue_name_tup = mycursor.fetchall()
-			venue_name = venue_name_tup[0][0]
-			if counter <= (venue_number/2) :
-				zoom_url = zoom_url1
-			else:
-				zoom_url = zoom_url2
+			venue_tup = mycursor.fetchall()
+			venue_name = venue_tup[0][0]
+			zoom_url = venue_tup[0][1]
+
 			sql = "SELECT name from Participants WHERE discord_id = %s AND role = %s"
 			val = (sort_chair_dict[d],'jury')
 			mycursor.execute(sql,val)
@@ -476,20 +471,18 @@ async def draw (ctx, round):
 			if sort_chair_dict[d] != None :
 				user = bot.get_user(sort_chair_dict[d]) 
 				await user.send(embed = embed)
-	counter += 1
 
-	counter=0
+
+
 	for e in sort_panel_dict:
 		if len(e) > 0:
-			sql = "SELECT VenueName from Venues WHERE VenueID = %s"
+			sql = "SELECT VenueName, zoom_link from Venues WHERE VenueID = %s"
 			val = (e,)
 			mycursor.execute(sql,val)
-			venue_name_tup = mycursor.fetchall()
-			venue_name = venue_name_tup[0][0]
-			if counter <= (venue_number/2) :
-				zoom_url = zoom_url1
-			else:
-				zoom_url = zoom_url2
+			venue_tup = mycursor.fetchall()
+			venue_name = venue_tup[0][0]
+			zoom_url = venue_tup[0][1]
+
 			for f in range(len(sort_panel_dict[e])):
 				if sort_panel_dict[e][f] != None:
 					sql = "SELECT name from Participants WHERE discord_id = %s AND role = %s"
@@ -517,20 +510,18 @@ async def draw (ctx, round):
 					embed.add_field(name='Pozisyon', value = "Yan Jüri", inline= True) 
 					user = bot.get_user(sort_panel_dict[e][f])
 					await user.send(embed = embed)
-		counter += 1
 
-	counter = 0
+
+
 	for g in sort_tra_dict:
 		if len(g) > 0:
-			sql = "SELECT VenueName from Venues WHERE VenueID = %s"
+			sql = "SELECT VenueName, zoom_link from Venues WHERE VenueID = %s"
 			val = (g,)
 			mycursor.execute(sql,val)
-			venue_name_tup = mycursor.fetchall()
-			venue_name = venue_name_tup[0][0]
-			if counter <= (venue_number/2) :
-				zoom_url = zoom_url1
-			else:
-				zoom_url = zoom_url2
+			venue_tup = mycursor.fetchall()
+			venue_name = venue_tup[0][0]
+			zoom_url = venue_tup[0][1]
+
 			for h in range(len(sort_tra_dict[g])):
 				if sort_tra_dict[g][h] != None:
 					sql = "SELECT name from Participants WHERE discord_id = %s AND role = %s"

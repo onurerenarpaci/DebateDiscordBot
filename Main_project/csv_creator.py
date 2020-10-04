@@ -17,6 +17,8 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
+zoom_list = ["https://kocun.zoom.us/j/94108431105", "https://kocun.zoom.us/j/9402351069", "https://kocun.zoom.us/j/dummyzoomlink"]
+
 round = 1
 url_part = f'https://kutab.herokuapp.com/api/v1/tournaments/bp88team/rounds/{round}/pairings'
 
@@ -118,5 +120,11 @@ for x in range(zoomnumber):
 		mycursor.execute(sql,val)
 		venue_tup = mycursor.fetchall()
 		venue_name = str(venue_tup[0][0])
+
+		sql = "UPDATE Venues SET zoom_link = %s WHERE VenueID = %s"
+		val = (zoom_list[x],int(a))
+		mycursor.execute(sql,val)
+		mydb.commit()
+
 		for email in sorted_dict[a]:
 			csvlist[x].writerow([venue_name, email])
