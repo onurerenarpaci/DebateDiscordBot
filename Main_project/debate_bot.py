@@ -125,6 +125,20 @@ async def checkinUpdate():
 	await session.close()
 
 @bot.command()
+async def cutteams(ctx):
+	sql = "UPDATE Participants SET cut_status = %s WHERE checkin = %s AND role = %s"
+	val = (True, False, "speaker")
+	mycursor.execute(sql, val)
+	mydb.commit()
+
+	sql = "UPDATE Participants SET checkin = %s"
+	val = (False,)
+	mycursor.execute(sql, val)
+	mydb.commit()
+
+	print("Teams have been cut.")	
+
+@bot.command()
 async def beingcut(ctx):
 	global cutMessageList
 	alttabs = "".join("-" for x in range(75))
