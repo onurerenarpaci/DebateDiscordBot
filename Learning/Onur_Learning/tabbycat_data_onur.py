@@ -5,15 +5,16 @@ from dotenv import load_dotenv
 import json
 import mysql.connector
 import csv
-
+import math
 
 load_dotenv()
 
 mydb = mysql.connector.connect(
-    host="localhost",
-    user=os.getenv("MYSQL_USER"),
-    password=os.getenv("MYSQL_PASSWORD"),
-    database="debates")
+  host="localhost",
+  user="onur",
+  password="koc2020",
+  database="firstdatabase"
+)
 
 mycursor = mydb.cursor()
 
@@ -39,10 +40,10 @@ for x in result:
       teamid_list.append(string.split('/')[-1])
    ven = x.get("venue")
    ven_id = ven.split('/')[-1]
-   teamdict[ven_id] = teamid_list[0:4]
+   teamdict[ven_id] = teamid_list.copy()
    teamid_list.clear()
    i +=1
-#print(teamdict)
+print(teamdict)
 print("--------------------------")
 #the code that gives personal ids of adjudicators in a venue as a dictionary
 j=0
@@ -55,10 +56,10 @@ for a in result:
       id_list.append(c.split('/')[-1])
    ven = a.get("venue")
    ven_id = ven.split('/')[-1]
-   adj_dict[ven_id] = id_list[0:len(id_list)]
+   adj_dict[ven_id] = id_list.copy()
    id_list.clear()
    j +=1
-#print(adj_dict)
+print(adj_dict)
 
 #mycursor.execute("SELECT email FROM Participants WHERE id=18")
 
@@ -72,8 +73,8 @@ for d in adj_dict:
       val = (adj_dict[d][e],)
       mycursor.execute(sql,val)
       result = mycursor.fetchall()
-      mails_list.extend(result)
-   adj_dict[d] = mails_list[0: len(mails_list)]
+      mails_list.extend(result[0])
+   adj_dict[d] = mails_list.copy()
    mails_list.clear()
 
 #the code that create a dictionary of speakers mails in each room
@@ -84,8 +85,8 @@ for d in teamdict:
       val = (teamdict[d][e],)
       mycursor.execute(sql,val) 
       result = mycursor.fetchall()
-      mails_list.extend(result)
-   teamdict[d] = mails_list[0: len(mails_list)]
+      mails_list.extend(x[0] for x in result)
+   teamdict[d] = mails_list.copy()
    mails_list.clear()
  
 #the code that merge two dictionaries
@@ -101,33 +102,32 @@ sorted_dict={}
 for i in sorted (final_dict) : 
    sorted_dict[i]=final_dict[i]
 
-#print(sorted_dict)
+print(sorted_dict)
 
 #the code that creates csv files
 venue_number=len(sorted_dict.keys())
 countr = 0
-csvval1=csv.writer(open("csvfile1.csv","w"))
-csvval2=csv.writer(open("csvfile2.csv","w"))
-room=[]
-csvval1.writerow(['Pre-assign Room Name'] + ['Email Address'])
-csvval2.writerow(['Pre-assign Room Name'] + ['Email Address'])
-for x,y in sorted_dict.items():
-   sql = "SELECT VenueName from Venues WHERE VenueID = %s"
-   val = (int(x),)
-   mycursor.execute(sql,val)
-   venue_tup = mycursor.fetchall()
-   venue_name = str(venue_tup[0][0])
-   room.append(venue_name)
-   for a in y:  
-      parts=str(a)   
-      room.append(parts[2:-3])
+csvlist = []
+zoomnumber = math.ceil(len(sorted_dict)/8)
+for x in range(zoomnumber):
+   csvlist.append(csv.writer(open(f"csvfile{x+1}.csv","w")))
 
-      if countr<=(venue_number/2) :
-         csvval1.writerows([room])
-      else:
-         csvval2.writerows([room])
-      room.clear()
-   countr += 1
+
+for x in csvlist:
+   x.writerow(['Pre-assign Room Name','Email Address'])
+
+
+venue_id_list = list(sorted_dict.keys()).copy()
+
+for x in range(zoomnumber):
+   for a in venue_id_list[8*x:8*x+8]:
+      sql = "SELECT VenueName from Venues WHERE VenueID = %s"
+      val = (int(a),)
+      mycursor.execute(sql,val)
+      venue_tup = mycursor.fetchall()
+      venue_name = str(venue_tup[0][0])
+      for email in sorted_dict[a]:
+         csvlist[x].writerow([venue_name, email])
    
 
 

@@ -1,13 +1,93 @@
-Pre-assign Room Name,Email Address
-26,HannePoulsen@einrot.com,ZulaYonas@rhyta.com,MeeriNyman@armyspy.com,SamanthaCoxen@teleworm.us,BeaufortDagenais@teleworm.us,RobertoVukelic@cuvox.de,ManuelaBrajkovic@gustr.com,VoXuanCung@rhyta.com,MarvinPLowery@cuvox.de,ChristopheSalois@rhyta.com,KevinWerner@armyspy.com
-27,PatrickHussein@fleckens.hu,FesahayeSelam@superrito.com,JaromirAlekseeva@dayrep.com,DieterKonig@teleworm.us,MartynaMitchell@gustr.com,MehretNuguse@armyspy.com,MaliSultanovich@jourrapide.com,BriceRouthier@armyspy.com,LeThiChiLan@einrot.com,DiegoAlmeidaBarbosa@armyspy.com,MerryBrandagamba@gustr.com
-28,EdipoSanchezReyna@jourrapide.com,InasSumaiyaSaid@armyspy.com,EvelynMartinsAlmeida@superrito.com,BirtheDavidsen@teleworm.us,AmadeuszPiotrowski@armyspy.com,OmarBerg@dayrep.com,LodovicaBoni@rhyta.com,TexasPetersson@einrot.com,YeseniaAbramova@rhyta.com,NevenBarisic@jourrapide.com,ReynaRChavez@jourrapide.com
-29,IneSuda@fleckens.hu,BartolomeoZito@cuvox.de,JuliaSouzaRocha@fleckens.hu,WyattBourgouin@dayrep.com,ObielumaniChukwubuikem@armyspy.com,MusetteLajoie@dayrep.com,ElizabetaLucic@rhyta.com,EllaDumas@rhyta.com,FacinoLombardi@superrito.com,CintioArmijoRojas@gustr.com,FareeqMutaShamon@gustr.com
-30,JenniferDRothman@armyspy.com,IzydorZawadzki@cuvox.de,HortenciaGEllis@cuvox.de,AnglaNystrom@teleworm.us,DemsasMewael@jourrapide.com,YeMeng@superrito.com,PatrikIvanovic@teleworm.us,CordeliaSagese@teleworm.us,JanaFuchs@jourrapide.com,EditaRehberger@rhyta.com,NailDegtyaryov@gustr.com
-31,ZaurbekSultanovich@armyspy.com,AleksanderKowalczyk@armyspy.com,WladyslawaCzerwinska@jourrapide.com,RafaelSWiles@dayrep.com,NkemkaNwabugwu@jourrapide.com,JosephSteele@superrito.com,AuneLeppala@teleworm.us,LukasEkstrom@superrito.com,LailaFilemonsen@dayrep.com,DaviSousaCorreia@teleworm.us,GabrielCurran@jourrapide.com,OliverMurray@gustr.com,TellervoHyssala@armyspy.com
-32,NevenkaSimic@jourrapide.com,JohnTobiassen@einrot.com,RaviRotteveel@teleworm.us,DanielPoulsen@cuvox.de,OrvarOmarsson@teleworm.us,AgnarGeorgsson@cuvox.de,FelicienneChampagne@armyspy.com,WilliamRMogensen@armyspy.com,MariaAasen@dayrep.com,AddisonMacDonald@armyspy.com,OliviaNLorenzen@jourrapide.com,ElmurzaChichigov@superrito.com
-33,PatriciaRepina@dayrep.com,JulieJohansen@superrito.com,JodieWilliamson@armyspy.com,GerardinoLoggia@armyspy.com,ShirabeKaneko@gustr.com,RenataHajna@fleckens.hu,KirikaYamamura@jourrapide.com,VitorCostaAlmeida@cuvox.de,FrancoMarchesi@fleckens.hu,KathrinFrankfurter@teleworm.us,KimGunnarsson@superrito.com,BellaHalcomb@teleworm.us
-34,NoahShah@cuvox.de,DominicWalton@teleworm.us,IzaketAkhtakhanov@dayrep.com,ZaynapBisliev@dayrep.com,YmkeOwusu@einrot.com,SethSimos@fleckens.hu,MiltonLindholm@jourrapide.com,NiamhJohannes@superrito.com,HercegLorand@dayrep.com,CamillaEvensen@rhyta.com,DarioMarinovic@fleckens.hu,IvonaPeric@fleckens.hu,ChukwubuikemIloabuchi@superrito.com
-35,ReginaLoggia@rhyta.com,MelilotWhitfoot@einrot.com,MikeAMller@einrot.com,LuukasIkonen@armyspy.com,TonHungTuat@teleworm.us,JaroslavHornych@fleckens.hu,NnannaNkemjika@armyspy.com,DoreneBrunault@teleworm.us,LeaBumgarner@fleckens.hu,AaliyahRobinson@dayrep.com,DennisVillalpandoGaribay@superrito.com,TaoHuang@dayrep.com,RosGugeirsdottir@rhyta.com
-36,BarnaTamara@einrot.com,EdwardLennon@armyspy.com,LucaFrei@armyspy.com,AzizKidane@einrot.com,MarieVytlacilova@cuvox.de,OdiliNdubuisi@einrot.com,VitoriaSilvaBarbosa@rhyta.com,YohannesHagos@cuvox.de,SonnyBjork@rhyta.com,EduardoCostaPinto@cuvox.de,JohannaHolm@gustr.com,KhazaDratchev@armyspy.com,HrundHrafnkelsdottir@superrito.com
-37,BahiyyalDinButrusAwad@fleckens.hu,CsizmadiaRikard@gustr.com,IbeamakaOtutodilinna@rhyta.com,LelioToscani@rhyta.com,AronDang@einrot.com,SovbikaGairbekov@rhyta.com,YousuiNakanishi@superrito.com,ElitaSultygov@jourrapide.com,UrszulaGrabowska@cuvox.de,AnzorDratchev@fleckens.hu,KeiranWhite@superrito.com,KresimirMihaljevic@teleworm.us,CarlyCunningham@armyspy.com
+Pre-assign Room Name,Email Address
+East 102,HannePoulsen@einrot.com
+East 102,ZulaYonas@rhyta.com
+East 102,MeeriNyman@armyspy.com
+East 102,SamanthaCoxen@teleworm.us
+East 102,BeaufortDagenais@teleworm.us
+East 102,RobertoVukelic@cuvox.de
+East 102,ManuelaBrajkovic@gustr.com
+East 102,VoXuanCung@rhyta.com
+East 102,MarvinPLowery@cuvox.de
+East 102,ChristopheSalois@rhyta.com
+East 102,KevinWerner@armyspy.com
+East 105,PatrickHussein@fleckens.hu
+East 105,FesahayeSelam@superrito.com
+East 105,JaromirAlekseeva@dayrep.com
+East 105,DieterKonig@teleworm.us
+East 105,MartynaMitchell@gustr.com
+East 105,MehretNuguse@armyspy.com
+East 105,MaliSultanovich@jourrapide.com
+East 105,BriceRouthier@armyspy.com
+East 105,LeThiChiLan@einrot.com
+East 105,DiegoAlmeidaBarbosa@armyspy.com
+East 105,MerryBrandagamba@gustr.com
+East 107,EdipoSanchezReyna@jourrapide.com
+East 107,InasSumaiyaSaid@armyspy.com
+East 107,EvelynMartinsAlmeida@superrito.com
+East 107,BirtheDavidsen@teleworm.us
+East 107,AmadeuszPiotrowski@armyspy.com
+East 107,OmarBerg@dayrep.com
+East 107,LodovicaBoni@rhyta.com
+East 107,TexasPetersson@einrot.com
+East 107,YeseniaAbramova@rhyta.com
+East 107,NevenBarisic@jourrapide.com
+East 107,ReynaRChavez@jourrapide.com
+East 110,IneSuda@fleckens.hu
+East 110,BartolomeoZito@cuvox.de
+East 110,JuliaSouzaRocha@fleckens.hu
+East 110,WyattBourgouin@dayrep.com
+East 110,ObielumaniChukwubuikem@armyspy.com
+East 110,MusetteLajoie@dayrep.com
+East 110,ElizabetaLucic@rhyta.com
+East 110,EllaDumas@rhyta.com
+East 110,FacinoLombardi@superrito.com
+East 110,CintioArmijoRojas@gustr.com
+East 110,FareeqMutaShamon@gustr.com
+East 111,JenniferDRothman@armyspy.com
+East 111,IzydorZawadzki@cuvox.de
+East 111,HortenciaGEllis@cuvox.de
+East 111,AnglaNystrom@teleworm.us
+East 111,DemsasMewael@jourrapide.com
+East 111,YeMeng@superrito.com
+East 111,PatrikIvanovic@teleworm.us
+East 111,CordeliaSagese@teleworm.us
+East 111,JanaFuchs@jourrapide.com
+East 111,EditaRehberger@rhyta.com
+East 111,NailDegtyaryov@gustr.com
+East G03,ZaurbekSultanovich@armyspy.com
+East G03,AleksanderKowalczyk@armyspy.com
+East G03,WladyslawaCzerwinska@jourrapide.com
+East G03,RafaelSWiles@dayrep.com
+East G03,NkemkaNwabugwu@jourrapide.com
+East G03,JosephSteele@superrito.com
+East G03,AuneLeppala@teleworm.us
+East G03,LukasEkstrom@superrito.com
+East G03,LailaFilemonsen@dayrep.com
+East G03,DaviSousaCorreia@teleworm.us
+East G03,GabrielCurran@jourrapide.com
+East G03,OliverMurray@gustr.com
+East G03,TellervoHyssala@armyspy.com
+North 211,NevenkaSimic@jourrapide.com
+North 211,JohnTobiassen@einrot.com
+North 211,RaviRotteveel@teleworm.us
+North 211,DanielPoulsen@cuvox.de
+North 211,OrvarOmarsson@teleworm.us
+North 211,AgnarGeorgsson@cuvox.de
+North 211,FelicienneChampagne@armyspy.com
+North 211,WilliamRMogensen@armyspy.com
+North 211,MariaAasen@dayrep.com
+North 211,AddisonMacDonald@armyspy.com
+North 211,OliviaNLorenzen@jourrapide.com
+North 211,ElmurzaChichigov@superrito.com
+North 213,PatriciaRepina@dayrep.com
+North 213,JulieJohansen@superrito.com
+North 213,JodieWilliamson@armyspy.com
+North 213,GerardinoLoggia@armyspy.com
+North 213,ShirabeKaneko@gustr.com
+North 213,RenataHajna@fleckens.hu
+North 213,KirikaYamamura@jourrapide.com
+North 213,VitorCostaAlmeida@cuvox.de
+North 213,FrancoMarchesi@fleckens.hu
+North 213,KathrinFrankfurter@teleworm.us
+North 213,KimGunnarsson@superrito.com
+North 213,BellaHalcomb@teleworm.us
