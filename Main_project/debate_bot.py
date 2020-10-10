@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import aiohttp
 import mysql.connector
 import math
+import datetime
 
 load_dotenv()
 headers = {"Authorization": os.getenv("TABBYCAT_TOKEN")}
@@ -210,7 +211,7 @@ async def manual_checkin(ctx, discord_id):
 async def motion_release(ctx, round):
 	print("motion_release")
 	session = aiohttp.ClientSession()
-	url = f'{tabbyurl}/api/v1/tournaments/{tournament}/motions/{round}'
+	url = f'{tabbyurl}/api/v1/tournaments/{tournament}/motions/15'
 	async with session.get(url, headers=headers) as resp:
 		print(resp.status)
 		result = await resp.json()
@@ -364,6 +365,7 @@ async def draw (ctx, round):
 				url_key = str(url_key_tup[0][0])
 				embed = discord.Embed(
 					title = f'{round}. TUR KURASI',
+					timestamp=datetime.datetime.utcfromtimestamp(1601117883),
 					description = f'{debater_name}, {debater_team} takımı için gerekli bilgiler:',
 					colour = 0xce0203
 				)   
@@ -559,6 +561,25 @@ async def draw (ctx, round):
 					user = bot.get_user(sort_tra_dict[g][h])
 					await user.send(embed = embed)
 		counter += 1
+
+@bot.command(name= "test")
+async def test(ctx):
+	user = bot.get_user(695648854875570186)
+	embed = discord.Embed(
+		title = f'5. TUR KURASI',
+		timestamp=datetime.datetime.utcfromtimestamp(1601117883),
+		description = f' Koç Ne Derler - Onur Eren Arpacı için gerekli bilgiler:',
+		colour = 0xce0203
+	)   
+	#embed.set_image(url='https://cdn.discordapp.com/attachments/750848362156392531/757671571438567584/Ku_Munazara.jpg')
+	embed.set_thumbnail(url='https://media.discordapp.net/attachments/750073975379460251/756139668197867651/logo_uzun.jpg')
+	embed.set_author(name= 'KU AÇIK 2020 ÇEVRİMİÇİ',
+	icon_url='https://cdn.discordapp.com/attachments/750848362156392531/757672480239386714/Ku_Munazara_icon.jpg')
+	embed.add_field(name='Bina Linki', value = f'[Zoom görüşmenize katılmak için buraya tıklayın](https://www.google.com)', inline= False)
+	embed.add_field(name='Tabbycat Linki', value = f'[Size özel Tabbycat linkiniz](https://kutab.herokuapp.com/bp88team/12345)', inline= False)
+	embed.add_field(name='Salon', value = "SOSB10", inline= True)
+	embed.add_field(name='Pozisyon', value = "MA", inline= True)
+	await user.send(embed = embed)
 
 
 

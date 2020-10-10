@@ -72,7 +72,7 @@ async def register(ctx, unique_id):
             final = team + " - " + name
 
             await user.edit(nick=final)
-            for role in guild.roles:
+            for role in guild.roles:    
                 if(role.name == "Konuşmacı"):
                     await user.add_roles(role)
                     break

@@ -156,10 +156,11 @@ async def on_ready():
         
         
         
+client.run(TOKEN)
+
 print("initialization completed.")
     
 
-client.run(TOKEN)
 mydb.commit()
 mycursor.close()
 mydb.close()
