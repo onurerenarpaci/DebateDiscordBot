@@ -310,10 +310,18 @@ async def draw (ctx, round):
 	for x in result:
 		for y in range(4):
 			string = (result[i].get("teams")[y].get("team"))
-			teamid_list.append(string.split('/')[-1])
+			team_id = (string.split('/')[-1])
+            if result[i].get("teams")[y].get("side")== 'og':
+                teamid_list[0] = team_id
+            elif result[i].get("teams")[y].get("side")== 'oo':
+                teamid_list[1] = team_id
+            elif result[i].get("teams")[y].get("side") == 'cg':
+                teamid_list[2] = team_id
+            else:
+                teamid_list[3] = team_id
 		ven = x.get("venue")
 		ven_id = ven.split('/')[-1]
-		teamdict[ven_id] = teamid_list[0:4]
+		teamdict[ven_id] = teamid_list.copy()
 		teamid_list.clear()
 		i +=1
 	
@@ -349,13 +357,13 @@ async def draw (ctx, round):
 
 		for y in range(len(sorted_teamdict[x])):
 			if y == 0 or y ==1:
-				side = 'MK'
-			elif y == 2 or y ==3:
-				side = 'HK'
-			elif y ==4 or y == 5:
-				side = 'MA'
-			else :
 				side = 'HA'
+			elif y == 2 or y ==3:
+				side = 'MA'
+			elif y ==4 or y == 5:
+				side = 'HK'
+			else :
+				side = 'MK'
 
 			if sorted_teamdict[x][y] != None:
 				sql = "SELECT name from Participants WHERE discord_id = %s AND role = %s"
