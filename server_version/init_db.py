@@ -93,82 +93,82 @@ mycursor.executemany(sql, adjudicators)
 mydb.commit()
 print(mycursor.rowcount," juries was inserted.")
 
-#initilazing venues table
-mycursor.execute("CREATE TABLE Venues (VenueID INT, VenueName VARCHAR(64), zoom_link VARCHAR(512))")
-url_venues = f'{tabbyurl}/api/v1/tournaments/{tournament}/venues'
-venue_list = requests.get(url_venues, headers = headers).json()
-venue = ()
-venues = []
-for x in venue_list:
-    venue = (x["id"], x["name"])
-    venues.append(venue)
+# #initilazing venues table
+# mycursor.execute("CREATE TABLE Venues (VenueID INT, VenueName VARCHAR(64), zoom_link VARCHAR(512))")
+# url_venues = f'{tabbyurl}/api/v1/tournaments/{tournament}/venues'
+# venue_list = requests.get(url_venues, headers = headers).json()
+# venue = ()
+# venues = []
+# for x in venue_list:
+#     venue = (x["id"], x["name"])
+#     venues.append(venue)
 
-sql = "INSERT INTO Venues (VenueID, VenueName) VALUES (%s, %s)"
+# sql = "INSERT INTO Venues (VenueID, VenueName) VALUES (%s, %s)"
 
-mycursor.executemany(sql, venues)
-mydb.commit()
-print(mycursor.rowcount," venues was inserted.")
-
-
-#initilazing private rooms
-TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD = os.getenv("DISCORD_GUILD")
-client = discord.Client()
+# mycursor.executemany(sql, venues)
+# mydb.commit()
+# print(mycursor.rowcount," venues was inserted.")
 
 
-mycursor.execute("CREATE TABLE Private_rooms (name VARCHAR(64), channel_type VARCHAR(64), type VARCHAR(64), id BIGINT UNSIGNED) DEFAULT CHARSET=utf8mb4")
+# #initilazing private rooms
+# TOKEN = os.getenv('DISCORD_TOKEN')
+# GUILD = os.getenv("DISCORD_GUILD")
+# client = discord.Client()
 
 
-@client.event
-async def on_ready():
-    print(f"{client.user} has connected to Discord!")
-    guild = discord.utils.get(client.guilds, name=GUILD)
+# mycursor.execute("CREATE TABLE Private_rooms (name VARCHAR(64), channel_type VARCHAR(64), type VARCHAR(64), id BIGINT UNSIGNED) DEFAULT CHARSET=utf8mb4")
 
-    instit_category = await guild.create_category("Özel Oda 1")
-    prep_category = await guild.create_category("Çalışma Odası 1")
+
+# @client.event
+# async def on_ready():
+#     print(f"{client.user} has connected to Discord!")
+#     guild = discord.utils.get(client.guilds, name=GUILD)
+
+#     instit_category = await guild.create_category("Özel Oda 1")
+#     prep_category = await guild.create_category("Çalışma Odası 1")
     
-    text_channel_row = ()
-    voice_channel_row = ()
-    instit_room_ids = []
+#     text_channel_row = ()
+#     voice_channel_row = ()
+#     instit_room_ids = []
     
-    room_count = 1 
-    i = 0
+#     room_count = 1 
+#     i = 0
     
-    for _, ins in institutions.items():
-        text_channel = await instit_category.create_text_channel(ins+"-sohbet")
-        voice_channel = await instit_category.create_voice_channel(ins+" Ses Kanalı")
-        text_channel_row = (ins, "text_channel", "institution", text_channel.id)
-        voice_channel_row = (ins, "voice_channel", "institution", voice_channel.id)
-        instit_room_ids.append(text_channel_row)
-        instit_room_ids.append(voice_channel_row)
-        i = i+2
-        if i % 50 == 0:
-            room_count += 1 
-            instit_category = await guild.create_category(f"Özel Oda {room_count}")
+#     for _, ins in institutions.items():
+#         text_channel = await instit_category.create_text_channel(ins+"-sohbet")
+#         voice_channel = await instit_category.create_voice_channel(ins+" Ses Kanalı")
+#         text_channel_row = (ins, "text_channel", "institution", text_channel.id)
+#         voice_channel_row = (ins, "voice_channel", "institution", voice_channel.id)
+#         instit_room_ids.append(text_channel_row)
+#         instit_room_ids.append(voice_channel_row)
+#         i = i+2
+#         if i % 50 == 0:
+#             room_count += 1 
+#             instit_category = await guild.create_category(f"Özel Oda {room_count}")
 
-    sql = "INSERT INTO Private_rooms (name, channel_type, type, id) VALUES (%s, %s, %s, %s)"
-    mycursor.executemany(sql, instit_room_ids)
-    print(mycursor.rowcount," institution private channels was inserted.")
-    mydb.commit()
+#     sql = "INSERT INTO Private_rooms (name, channel_type, type, id) VALUES (%s, %s, %s, %s)"
+#     mycursor.executemany(sql, instit_room_ids)
+#     print(mycursor.rowcount," institution private channels was inserted.")
+#     mydb.commit()
     
 
-    team_room_ids = [] 
-    room_count = 1
-    i = 0
+#     team_room_ids = [] 
+#     room_count = 1
+#     i = 0
 
-    for team in teams_list:
-        voice_channel = await prep_category.create_voice_channel(team+" Ses Kanalı")
-        voice_channel_row = (team, "voice_channel", "team", voice_channel.id)
-        team_room_ids.append(voice_channel_row)
-        i = i+1
-        if i % 50 == 0:
-            room_count += 1
-            prep_category = await guild.create_category(f"Çalışma Odası {room_count}")
+#     for team in teams_list:
+#         voice_channel = await prep_category.create_voice_channel(team+" Ses Kanalı")
+#         voice_channel_row = (team, "voice_channel", "team", voice_channel.id)
+#         team_room_ids.append(voice_channel_row)
+#         i = i+1
+#         if i % 50 == 0:
+#             room_count += 1
+#             prep_category = await guild.create_category(f"Çalışma Odası {room_count}")
 
-    sql = "INSERT INTO Private_rooms (name, channel_type, type, id) VALUES (%s, %s, %s, %s)"
-    mycursor.executemany(sql, team_room_ids)
-    print(mycursor.rowcount," team private channels was inserted.")
-    mydb.commit()
+#     sql = "INSERT INTO Private_rooms (name, channel_type, type, id) VALUES (%s, %s, %s, %s)"
+#     mycursor.executemany(sql, team_room_ids)
+#     print(mycursor.rowcount," team private channels was inserted.")
+#     mydb.commit()
 
         
         
@@ -177,9 +177,9 @@ async def on_ready():
 
     
 
-client.run(TOKEN)
-print("initialization completed.")
-mydb.commit()
-mycursor.close()
-mydb.close()
-print("Connection closed.")
+# client.run(TOKEN)
+# print("initialization completed.")
+# mydb.commit()
+# mycursor.close()
+# mydb.close()
+# print("Connection closed.")
