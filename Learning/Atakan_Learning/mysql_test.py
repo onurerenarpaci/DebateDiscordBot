@@ -9,13 +9,13 @@ mydb = mysql.connector.connect(
     host="localhost",
     user=os.getenv("MYSQL_USER"),
     password=os.getenv("MYSQL_PASSWORD"),
-    database="debate")
+    database="deneme")
 
 mycursor = mydb.cursor()   
 
-sql = "Select name, channel_type, type, id from private_rooms where name = %s or name = %s "
+sql = "Select name, email, url_key, unique_id from participants"
 val = ("Dorwini2on", "3Dorwinion DG")
-mycursor.execute(sql,val)
+mycursor.execute(sql)
 print("row count",mycursor.rowcount)
 
 # sql = "select team from participants where  name = 'independent' "
@@ -24,6 +24,9 @@ print("row count",mycursor.rowcount)
 # val = ("817485",)
 # mycursor.execute(sql, val)
 myresult= mycursor.fetchall()
+print("myresult")
+print(myresult)
+print("end")
 for x in myresult:
     print("Ses")
     print(x)
