@@ -167,35 +167,37 @@ async def beingcut(ctx):
 	
 	cutMessageList.clear()
 
-	if len(teamtable[0]) >= 1:
-		message = await guild.get_channel(announcementId).send(title_1)
-		cutMessageList.append(message)
+	if len(teamtable) >= 1:
+		if len(teamtable[0]) >= 1:
+			message = await guild.get_channel(announcementId).send(title_1)
+			cutMessageList.append(message)
 
-		firstCodeBlock = True
+			firstCodeBlock = True
 
-		for x in teamtable:
-			if firstCodeBlock:
-				message = await guild.get_channel(announcementId).send(f'```{team_title}{alttabs}\n{linebreak.join(x)}```')
-				cutMessageList.append(message)
-				firstCodeBlock = False
-			else:
-				message = await guild.get_channel(announcementId).send(f'```{linebreak.join(x)}```')
-				cutMessageList.append(message)
+			for x in teamtable:
+				if firstCodeBlock:
+					message = await guild.get_channel(announcementId).send(f'```{team_title}{alttabs}\n{linebreak.join(x)}```')
+					cutMessageList.append(message)
+					firstCodeBlock = False
+				else:
+					message = await guild.get_channel(announcementId).send(f'```{linebreak.join(x)}```')
+					cutMessageList.append(message)
 
-	if len(jurytable[0]) >= 1:	
-		message = await guild.get_channel(announcementId).send(title_2)
-		cutMessageList.append(message)
+	if len(jurytable) >= 1:
+		if len(jurytable[0]) >= 1:	
+			message = await guild.get_channel(announcementId).send(title_2)
+			cutMessageList.append(message)
 
-		firstCodeBlock = True
+			firstCodeBlock = True
 
-		for x in jurytable:
-			if firstCodeBlock:
-				message = await guild.get_channel(announcementId).send(f'```{jury_title}{alttabs[:50]}\n{linebreak.join(x)}```')
-				cutMessageList.append(message)
-				firstCodeBlock = False
-			else:
-				message = await guild.get_channel(announcementId).send(f'```{linebreak.join(x)}```')
-				cutMessageList.append(message)
+			for x in jurytable:
+				if firstCodeBlock:
+					message = await guild.get_channel(announcementId).send(f'```{jury_title}{alttabs[:50]}\n{linebreak.join(x)}```')
+					cutMessageList.append(message)
+					firstCodeBlock = False
+				else:
+					message = await guild.get_channel(announcementId).send(f'```{linebreak.join(x)}```')
+					cutMessageList.append(message)
 
 @bot.command(name='manual_checkin')
 async def manual_checkin(ctx, discord_id):

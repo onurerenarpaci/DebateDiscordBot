@@ -21,7 +21,7 @@ tournament = os.getenv("TOURNAMENT")
 
 zoom_list = ["https://kocun.zoom.us/j/2919518685", "https://kocun.zoom.us/j/2919518685", "https://kocun.zoom.us/j/2919518685"]
 
-round = 1
+round = int(input('Enter round number: '))
 url_part = f'{tabbyurl}/api/v1/tournaments/{tournament}/rounds/{round}/pairings'
 
 headers = {"Authorization": os.getenv("TABBYCAT_TOKEN") } 
