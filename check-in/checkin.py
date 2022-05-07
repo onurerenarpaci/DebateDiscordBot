@@ -11,16 +11,16 @@ import mysql.connector
 import math
 
 mydb = mysql.connector.connect(
-	host="localhost",
-	user="onur",
-	password="koc2020",
-	database="firstdatabase"
+	host="",
+	user="",
+	password="",
+	database=""
 )
 
 mycursor = mydb.cursor()
 
-checkinId = 739551824612294687 #Checkin channel id
-announcementId = 739551824612294687 # announcement channel id
+checkinId = 0 #Checkin channel id
+announcementId = 0 # announcement channel id
 checkinStatus = False # True = Open, False = Close
 checkinMessage = None
 guild = None # discord.utils.get(bot.guilds, name=GUILD)
@@ -37,7 +37,7 @@ motion_messages = {
 	"8": "Final Konusu:",
 }
 
-headers = {"Authorization" : "Token 35792636ef40d2194607066b63e49e3ad3a2076c"}
+headers = {"Authorization" : "Token #####################"}
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -53,17 +53,6 @@ async def on_ready():
 		f'{bot.user} has connected to the following guild:\n'
 		f'{guild.name}(id: {guild.id})\n'
 	)
-
-# @bot.event
-# async def on_message(message):
-# 	if message.author == bot.user:
-# 		return
-		
-# 	if message.content == "!check-in":
-# 		await checkin(message)
-	
-# 	if message.content == "!beingcut":
-# 		await beingcut()
 
 @bot.command()	
 async def checkin(ctx):
@@ -277,6 +266,3 @@ bot.run(TOKEN)
 mydb.commit()
 mycursor.close()
 mydb.close()
-print('Kapatıldı')
-
-

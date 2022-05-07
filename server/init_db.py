@@ -1,22 +1,29 @@
 import mysql.connector
-import os, requests, sys
+import os, requests, sys, csv
 from dotenv import load_dotenv
+import discord
+
 
 load_dotenv()
 
-header = {"Authorization": os.getenv("TOKEN") }
+headers = {"Authorization": os.getenv("TABBYCAT_TOKEN")}
+
 mydb = mysql.connector.connect(
     host="localhost",
     user=os.getenv("MYSQL_USER"),
     password=os.getenv("MYSQL_PASSWORD"),
-    database="debates")
+    database="########")
 
 mycursor = mydb.cursor()
+tabbyurl = os.getenv("URL")
+tournament = os.getenv("TOURNAMENT")    
 
 mycursor.execute("CREATE TABLE Participants (name VARCHAR(64), email VARCHAR(64), role VARCHAR(64) , team VARCHAR(64), team_id INT, institution VARCHAR(64), id INT, url_key VARCHAR(64), checkin BOOLEAN, cut_status BOOLEAN, discord_id BIGINT UNSIGNED, unique_id VARCHAR(6)) DEFAULT CHARSET=utf8mb4")
 
+#File names
+uniqe_ids_file_name = "unique_ids.txt"
 dirname = os.path.dirname(__file__)
-f = open(os.path.join(dirname, 'unique_ids.txt'))
+f = open(os.path.join(dirname, uniqe_ids_file_name))
 unique_ids = f.readlines()
 f.close()
 
@@ -25,13 +32,15 @@ def unique_id_generator():
 
 unique_generator = unique_id_generator()
 
-teams = requests.get("https://kutab.herokuapp.com/api/v1/tournaments/bp88team/teams",headers=header).json()
-instit = requests.get("https://kutab.herokuapp.com/api/v1/institutions", headers=header).json()
+teams = requests.get(f'{tabbyurl}/api/v1/tournaments/{tournament}/teams',headers=headers).json()
+instit = requests.get(f'{tabbyurl}/api/v1/institutions', headers=headers).json()
 
+#institutions list
 institutions = {}
 for x in instit:
    institutions[x["id"]] = x["code"]
 
+#insterting speakers to database
 teams_list = []
 speakers = []
 speaker = ()
@@ -43,7 +52,7 @@ for team in teams:
         "speaker",
         team['short_name'],
         team["id"],
-        institutions[int(team["institution"].split("/")[-1])] if team["institution"] != None else "Independent",
+        institutions[int(team["institution"].split("/")[-1])] if team["institution"] != None else "Open",
         _speaker["id"],
         _speaker["url_key"],
         False,
@@ -52,22 +61,24 @@ for team in teams:
         print(speaker)
         speakers.append(speaker)
 
-sql = "INSERT INTO Participants (name, email, role, team, team_id, institution, id, url_key, cut_status, checkin, unique_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+sql = "INSERT INTO Participants (name, email, role, team, team_id, institution, id, url_key, checkin, cut_status, unique_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
 mycursor.executemany(sql, speakers)
 mydb.commit()
 print(mycursor.rowcount," speakers was inserted.")
 
+
+#insterting adjudicators to database
 adjudicators = []
 adjudicator = ()
 
-adj_list = requests.get("https://kutab.herokuapp.com/api/v1/tournaments/bp88team/adjudicators",headers=header).json()
+adj_list = requests.get(f'{tabbyurl}/api/v1/tournaments/{tournament}/adjudicators',headers=headers).json()
 
 for adj in adj_list:
     adjudicator = (adj["name"],
     adj["email"],
     "jury",
-    institutions[int(adj["institution"].split('/')[-1])],
+    institutions[int(adj["institution"].split('/')[-1])] if adj["institution"] != None else "Independent",
     adj["id"],
     adj["url_key"],
     False,
@@ -81,19 +92,3 @@ sql = "INSERT INTO Participants (name, email, role, institution, id, url_key, ch
 mycursor.executemany(sql, adjudicators)
 mydb.commit()
 print(mycursor.rowcount," juries was inserted.")
-
-mycursor.execute("CREATE TABLE Venues (VenueID INT, VenueName VARCHAR(64))")
-url_venues = "https://kutab.herokuapp.com/api/v1/tournaments/bp88team/venues"
-venue_list = requests.get(url_venues, headers = header).json()
-venue = ()
-venues = []
-for x in venue_list:
-    venue = (x["id"], x["name"])
-    venues.append(venue)
-
-sql = "INSERT INTO Venues (VenueID, VenueName) VALUES (%s, %s)"
-
-mycursor.executemany(sql, venues)
-mydb.commit()
-print(mycursor.rowcount," venues was inserted.")
-

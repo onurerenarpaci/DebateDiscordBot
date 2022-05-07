@@ -1,0 +1,2 @@
+url = "https://#############.com"
+tournament = "#########"

@@ -13,13 +13,13 @@ mydb = mysql.connector.connect(
 	host="localhost",
 	user=os.getenv("MYSQL_USER"),
 	password=os.getenv("MYSQL_PASSWORD"),
-	database="debate")
+	database="##################")
 
 mycursor = mydb.cursor()
 tabbyurl = os.getenv("URL")
 tournament = os.getenv("TOURNAMENT")
 
-zoom_list = ["https://kocun.zoom.us/j/2919518685", "https://kocun.zoom.us/j/2919518685", "https://kocun.zoom.us/j/2919518685"]
+zoom_list = ["https://##################", "https://##################", "https://##################"]
 
 round = int(input('Enter round number: '))
 url_part = f'{tabbyurl}/api/v1/tournaments/{tournament}/rounds/{round}/pairings'
@@ -93,18 +93,18 @@ for x in final_dict:
 
 
 #the code that sort final_dict
-sorted_dict={}
+venue_links={}
 
-for i in sorted (final_dict) : 
-	sorted_dict[i]=final_dict[i]
+for i in sorted(final_dict) : 
+	venue_links[i]=final_dict[i]
 
-print(sorted_dict)
+print(venue_links)
 
 #the code that creates csv files
-venue_number=len(sorted_dict.keys())
+venue_number=len(venue_links.keys())
 countr = 0
 csvlist = []
-zoomnumber = math.ceil(len(sorted_dict)/8)
+zoomnumber = math.ceil(len(venue_links)/8)
 for x in range(zoomnumber):
 	csvlist.append(csv.writer(open(f"csvfile{x+1}.csv","w")))
 
@@ -113,7 +113,7 @@ for x in csvlist:
 	x.writerow(['Pre-assign Room Name','Email Address'])
 
 
-venue_id_list = list(sorted_dict.keys()).copy()
+venue_id_list = list(venue_links.keys()).copy()
 
 for x in range(zoomnumber):
 	for a in venue_id_list[8*x:8*x+8]:
@@ -128,5 +128,5 @@ for x in range(zoomnumber):
 		mycursor.execute(sql,val)
 		mydb.commit()
 
-		for email in sorted_dict[a]:
+		for email in venue_links[a]:
 			csvlist[x].writerow([venue_name, email])

@@ -11,7 +11,7 @@ mydb = mysql.connector.connect(
 	host="localhost",
 	user=os.getenv("MYSQL_USER"),
 	password=os.getenv("MYSQL_PASSWORD"),
-	database="debate")
+	database="#####################")
 
 mycursor = mydb.cursor()
 GUILD = os.getenv("DISCORD_GUILD")
@@ -129,4 +129,3 @@ mydb.commit()
 mycursor.close()
 mydb.close()
 print("Connection closed.")
-
