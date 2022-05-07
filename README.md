@@ -1,6 +1,6 @@
-DebateDiscordBot is a tool for organizing online debate tournaments.
+### DebateDiscordBot is a tool for organizing online debate tournaments.
 
-Features:
+### Features:
 -	Tabbycat database synchronization,
 -	Discord: 
     -   Participant registration 
@@ -11,6 +11,7 @@ Features:
 -	Mail automation for invitations
 -	Zoom auto break-out room allocation
 
+### Usage
 First, set up the tournament on Tabbycat and add the teams, judges, and schools.
 Add your API key, tournament id, and Tabbycat URL to the environment.
 Then set up the discord server for the tournament and create a discord bot from the discord developer dashboard. Afterward, you can configure the discord bot API key, server name, registration channel id, and announcements channel id in the environment.
@@ -18,7 +19,7 @@ Then set up a SQL server, initialize the server with init_db.py, and configure t
 To send invitation emails, you can configure and customize the send_emails.py
 To create the CSV files for auto Zoom break-out room allocation, use csv_creator.py
 
-Available discord commands:
+### Available discord commands:
 -	!kayıt \<invite-code> : registrations command for users
 -	!checkin : send the check-in message where users can check in by reacting to the message
 -	!cutteams : finish the check-in process by removing the teams who did not check-in
